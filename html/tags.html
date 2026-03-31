@@ -1,0 +1,52 @@
+<h2 class="page-title">索引管理</h2>
+
+<div class="tags-manager-layout">
+    <!-- 左侧：标签列表 -->
+    <div class="tags-sidebar">
+        <div class="tags-header">
+            <input type="text" id="tag-search" placeholder="搜索标签...">
+        </div>
+        <div id="tags-list-container" class="tags-list">
+            <!-- 动态加载 -->
+        </div>
+    </div>
+
+    <!-- 右侧：详情与操作 -->
+    <div class="tags-content">
+        <div id="tag-detail-view">
+            <div class="tag-detail-header">
+                <h3 id="current-view-title">所有作品</h3>
+                
+                <!-- 针对标签本身的操作 (重命名/删除) -->
+                <div id="tag-actions-area" class="tag-actions" style="display:none;">
+                    <button id="btn-rename-tag" class="action-link edit-action">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" /></svg>
+                        重命名 / 合并
+                    </button>
+                    <button id="btn-delete-tag" class="action-link delete-action">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>
+                        删除标签
+                    </button>
+                </div>
+            </div>
+            
+            <div class="tag-list-toolbar">
+                <p class="tag-count-hint">列表共 <span id="current-list-count">0</span> 篇</p>
+                <button id="btn-select-all" class="text-btn">全选</button>
+            </div>
+            
+            <div id="related-poems-list" class="related-poems">
+                <!-- 关联作品列表 -->
+            </div>
+        </div>
+        
+        <!-- 【新增】底部浮动批量操作栏 -->
+        <div id="batch-tag-bar" class="batch-bar">
+            <span class="batch-hint">已选 <strong id="batch-selected-count">0</strong> 篇</span>
+            <div class="batch-input-group">
+                <input type="text" id="batch-add-input" placeholder="输入要添加的标签...">
+                <button id="btn-batch-add" class="primary button">批量添加</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,76 @@
+<h2 class="page-title">意象簿</h2>
+
+<div class="imagery-layout">
+    <!-- 顶部：控制区 -->
+    <div class="imagery-header">
+        <div class="header-intro">
+            <p>高频词云 (Top 50)</p>
+            <span class="sub-text">点击词汇查看详细分析</span>
+        </div>
+        <button id="btn-manage-ignore" class="secondary button small">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+            管理屏蔽词
+        </button>
+    </div>
+
+    <!-- 【核心修改】分栏容器 -->
+    <div id="imagery-content-wrapper" class="imagery-content-wrapper">
+        
+        <!-- 左栏：高频词列表 -->
+        <div id="word-rank-list" class="word-rank-grid">
+            <div class="loading-placeholder">正在研墨分析...</div>
+        </div>
+
+        <!-- 右栏：详情展开区 (初始隐藏) -->
+        <div id="imagery-detail-panel" class="imagery-detail-panel">
+            <button id="close-detail-btn" class="panel-close-btn" title="关闭详情">&times;</button>
+            
+            <div class="detail-content-scroll">
+                <!-- 1. 汉字田字格 (顶部) -->
+                <div class="detail-section tianzi-section">
+                    <div id="tianzi-wrapper" class="tianzi-wrapper">
+                        <!-- JS 生成 -->
+                    </div>
+                </div>
+
+                <!-- 2. 数据图表 (中部) -->
+                <div class="detail-section chart-section-inner">
+                    <!-- 图表 1: 频次 -->
+                    <div class="chart-wrapper">
+                        <h5 class="chart-title">年度出现频次</h5>
+                        <div class="chart-container">
+                            <canvas id="usage-chart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- 图表 2: 占比 (新增) -->
+                    <div class="chart-wrapper">
+                        <h5 class="chart-title">年度创作占比 (%)</h5>
+                        <div class="chart-container">
+                            <canvas id="ratio-chart"></canvas>
+                        </div>
+                    </div>
+                </div>      
+
+                <!-- 3. 诗词列表 (底部，点击图表后显示) -->
+                <div id="chart-poems-list" class="chart-poems-list" style="display:none;">
+                    <h4><span id="selected-year-label"></span>年 · 包含“<span id="selected-word-label"></span>”的作品：</h4>
+                    <div id="poems-result-container" class="poems-result-grid"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 屏蔽词弹窗 (保持不变) -->
+<div id="ignore-modal" class="modal-overlay">
+    <div class="modal-content" style="max-width: 500px;">
+        <button id="close-ignore-btn" class="modal-close-btn">&times;</button>
+        <h3>屏蔽词管理</h3>
+        <div class="ignore-input-group">
+            <input type="text" id="ignore-input" placeholder="输入词汇，回车添加...">
+            <button id="btn-add-ignore" class="primary button">添加</button>
+        </div>
+        <div id="ignore-tags-container" class="ignore-tags-cloud"></div>
+    </div>
+</div>

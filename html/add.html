@@ -1,0 +1,81 @@
+<h2 class="page-title">添加新篇</h2>
+<form id="add-poem-form" class="poem-editor-layout">
+    <div class="main-content-column">
+        <div class="form-group">
+            <label for="poem-content">内容:</label>
+            <textarea id="poem-content" name="content" placeholder="在此处挥毫泼墨..." required></textarea>
+        </div>
+    </div>
+    <div class="metadata-sidebar-column">
+        <div class="form-group">
+            <label for="poem-title">标题:</label>
+            <input type="text" id="poem-title" name="title" required>
+        </div>
+        <div class="form-group">
+            <label for="poem-creationDate">创作时间:</label>
+            <input type="date" id="poem-creationDate" name="creationDate" required>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="poem-type">作品类型:</label>
+                <select id="poem-type" name="type">
+                    <option value="诗">诗</option>
+                    <option value="词">词</option>
+                    <option value="文言文">文言文</option>
+                    <option value="现代文">现代文</option>
+                    <option value="随笔">随笔</option>
+                </select>
+            </div>
+            <div class="form-group" id="poem-genre-group">
+                <label for="poem-genre" id="poem-genre-label">体裁:</label>
+                <select id="poem-genre" name="genre">
+                    <option value="五言">五言</option>
+                    <option value="七言">七言</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="poem-preface">序言 (可选):</label>
+            <textarea id="poem-preface" name="preface" rows="4"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="poem-notes">注释 (可选):</label>
+            <textarea id="poem-notes" name="notes" rows="4"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label>精句摘录 (可选):</label>
+            <div class="quote-input-wrapper">
+                <input type="text" id="add-quote-input" placeholder="输入一句诗词后回车或点击添加...">
+                <button type="button" id="btn-add-quote" class="secondary" style="padding: 0 15px;">添加</button>
+            </div>
+            <ul id="add-quote-list" class="quote-list">
+                <!-- 动态生成的精句列表 -->
+            </ul>
+        </div>
+
+        <div class="form-group">
+            <label>标签:</label>
+            <div id="add-tag-input-component" class="tag-input-container">
+                <ul class="tag-list">
+                    <!-- 已选标签会显示在这里 -->
+                </ul>
+                <input type="text" class="tag-input" placeholder="输入创建新标签，或点击下方标签...">
+            </div>
+            <ul class="tag-suggestions"></ul>
+            <input type="hidden" id="poem-tags" name="tags">
+            
+            <!-- 【新增】标签云区域 -->
+            <div class="tag-cloud-wrapper">
+                <span class="tag-cloud-label">点击添加已有标签:</span>
+                <div id="add-tag-cloud" class="tag-cloud">
+                    <!-- 标签云将由 JS 加载 -->
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-actions">
+            <button type="submit" class="primary">保存作品</button>
+        </div>
+    </div>
+</form>

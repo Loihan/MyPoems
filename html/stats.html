@@ -1,0 +1,98 @@
+<h2 class="page-title">笔耕录</h2>
+
+<!-- 1. 核心指标卡片 -->
+<div class="stats-overview">
+    <div class="stat-card">
+        <div class="stat-icon blue">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+        </div>
+        <div class="stat-info">
+            <span class="stat-value" id="stat-total-poems">0</span>
+            <span class="stat-label">作品总数</span>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon green">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+        </div>
+        <div class="stat-info">
+            <span class="stat-value" id="stat-total-chars">0</span>
+            <span class="stat-label">累计字数</span>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon purple">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M17.63 5.84C17.27 5.33 16.67 5 16 5L5 5.01C3.9 5.01 3 5.9 3 7v10c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2h-1V3h-2v2h-2.37zM16 17H5V7h11v10z"/></svg>
+        </div>
+        <div class="stat-info">
+            <span class="stat-value" id="stat-days-active">0</span>
+            <span class="stat-label">创作天数</span>
+        </div>
+    </div>
+</div>
+
+<!-- 【新增】创作洞察 (Insights) -->
+<div class="stats-insights-grid">
+    <!-- 沉默 -->
+    <div class="insight-card">
+        <div class="insight-header">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <span>最长的沉默</span>
+        </div>
+        <div class="insight-body">
+            <div class="insight-highlight"><span id="insight-silence-days">0</span> 天</div>
+            <div class="insight-desc" id="insight-silence-period">笔墨未干</div>
+        </div>
+    </div>
+
+    <!-- 爆发 -->
+    <div class="insight-card">
+        <div class="insight-header">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg>
+            <span>最密集的创作</span>
+        </div>
+        <div class="insight-body">
+            <div class="insight-highlight" id="insight-busy-month">-</div>
+            <div class="insight-desc">
+                当月共挥毫 <span id="insight-busy-count">0</span> 篇
+            </div>
+        </div>
+    </div>
+
+    <!-- 时节 -->
+    <div class="insight-card">
+        <div class="insight-header">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+            <span>偏爱的时节</span>
+        </div>
+        <div class="insight-body">
+            <div class="insight-highlight" id="insight-fav-season">-</div>
+            <div class="insight-desc">
+                君多于此际抒怀
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 2. 创作热力图 -->
+<div class="chart-section">
+    <h3 class="section-title">创作热力图 (近一年)</h3>
+    <div class="heatmap-container">
+        <div id="calendar-heatmap" class="calendar-heatmap"></div>
+        <div class="heatmap-legend">
+            <span>少</span>
+            <span class="legend-box level-0"></span>
+            <span class="legend-box level-1"></span>
+            <span class="legend-box level-2"></span>
+            <span class="legend-box level-3"></span>
+            <span class="legend-box level-4"></span>
+            <span>多</span>
+        </div>
+    </div>
+</div>
+
+<!-- 3. 类型分布 -->
+<div class="chart-section">
+    <h3 class="section-title">体裁分布</h3>
+    <div id="type-distribution" class="type-distribution-bar"></div>
+</div>

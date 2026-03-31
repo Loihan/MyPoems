@@ -1,0 +1,20 @@
+# 忽略依赖库
+node_modules/
+
+# 忽略个人诗词数据文件 (关键：保护隐私)
+# 我们只保留文件夹结构，不上传具体的 .json 作品
+poems/*.json
+
+# 如果你希望在 GitHub 上展示一个示例，
+# 可以不忽略某个特定的 demo 文件，例如：
+# !poems/demo_sample.json
+
+# 忽略屏蔽词配置文件
+ignore_words.json
+
+# 忽略系统文件
+.DS_Store
+Thumbs.db
+
+# 忽略日志文件
+*.log
