@@ -1,0 +1,81 @@
+<!-- =================================================================== -->
+<!-- MyPoems - 作品总览页面 (view.html)                                -->
+<!-- =================================================================== -->
+
+<h2 class="page-title">作品总览</h2>
+
+<!-- 功能区：包含搜索、筛选和计数器 -->
+<div id="controls">
+    <div class="search-bar">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="search-icon">
+            <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd" />
+        </svg>
+        <input type="search" id="search-input" placeholder="在正文或标题中搜索...">
+    </div>
+
+    <!-- 筛选器容器 -->
+<div id="filters">
+<!-- 时间筛选行 -->
+<div class="filter-row">
+<div class="filter-group">
+<strong>创作年份:</strong>
+<!-- 新的年份筛选容器 -->
+<div id="year-filters"></div>
+</div>
+</div>
+<div class="filter-row">
+<div class="filter-group">
+<strong>创作月份:</strong>
+<!-- 新的月份筛选容器 -->
+<div id="month-filters"></div>
+</div>
+</div>
+
+        <!-- 类型筛选行 -->
+        <div class="filter-row">
+            <div class="filter-group" id="type-filters-container">
+                <strong>类型:</strong>
+                <div id="type-filters">
+                    <!-- 类型筛选选项将由JS动态生成 -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 体裁/词牌名筛选行 (默认隐藏) -->
+        <div class="filter-row">
+            <div class="filter-group" id="genre-filters-container" style="display: none;">
+                <strong>体裁:</strong>
+                <div id="genre-filters">
+                    <!-- 体裁筛选选项将由JS动态生成 -->
+                </div>
+            </div>
+        </div>
+        <div class="filter-row">
+            <div class="filter-group" id="tag-filters-container">
+                <strong>标签:</strong>
+                <!-- 新的标签云容器 -->
+                <div id="tag-filters"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 作品计数器 -->
+    <div id="poem-counter">
+        <!-- 计数信息将由JS动态生成 -->
+    </div>
+</div>
+
+<!-- 作品列表容器 -->
+<div id="poems-list" class="poem-grid-layout">
+    <!-- 作品卡片将由JS动态加载到这里 -->
+</div>
+
+
+<!-- 诗词详情模态框 (Modal) -->
+<div id="view-modal" class="modal-overlay">
+    <div class="modal-content">
+        <button id="view-modal-close-btn" class="modal-close-btn">&times;</button>
+        <!-- 作品的详细内容将由JS动态注入到这里 -->
+        <div id="modal-poem-content"></div>
+    </div>
+</div>

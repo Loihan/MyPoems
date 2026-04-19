@@ -1,0 +1,125 @@
+<h2 class="page-title">作品管理</h2>
+
+<!-- 功能区：搜索、筛选与计数 -->
+<div id="controls" class="manage-controls">
+    <div class="search-group">
+        <div class="search-bar">
+             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="search-icon">
+                <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd" />
+            </svg>
+            <input type="search" id="manage-search-input" placeholder="搜索标题...">
+        </div>
+        
+        <!-- 【新增】类型筛选器 -->
+        <select id="manage-filter-type" class="filter-select">
+            <option value="all">所有类型</option>
+            <option value="诗">诗</option>
+            <option value="词">词</option>
+            <option value="文言文">文言文</option>
+            <option value="现代文">现代文</option>
+            <option value="随笔">随笔</option>
+        </select>
+    </div>
+
+    <div id="manage-poem-counter"></div>
+</div>
+
+<!-- 【修改】将 grid 改为 table 结构 -->
+<div class="table-container">
+    <table class="manage-table">
+        <thead>
+            <tr>
+                <th width="35%">标题</th>
+                <th width="15%">类型/体裁</th>
+                <th width="20%">标签</th>
+                <th width="15%">创作日期</th>
+                <th width="15%" class="text-right">操作</th>
+            </tr>
+        </thead>
+        <tbody id="manage-poems-list">
+            <!-- 列表行将由 JS 动态加载 -->
+        </tbody>
+    </table>
+</div>
+
+<!-- 编辑模态框 (保持不变) -->
+<div id="edit-modal" class="modal-overlay">
+   <!-- ... (模态框内部代码保持原样，不需要动) ... -->
+    <div class="modal-content">
+        <button id="modal-close-btn" class="modal-close-btn">&times;</button>
+        <div id="edit-form-container">
+             <h3 class="page-title" style="font-size: 2rem; margin-top: 0; border: none;">编辑作品</h3>
+             <form id="edit-poem-form" class="poem-editor-layout">
+                <input type="hidden" name="filename">
+                <div class="main-content-column">
+                    <div class="form-group">
+                        <label for="edit-content">内容:</label>
+                        <textarea id="edit-content" name="content" required></textarea>
+                    </div>
+                </div>
+                <div class="metadata-sidebar-column">
+                    <div class="form-group">
+                        <label for="edit-title">标题:</label>
+                        <input type="text" id="edit-title" name="title" required>
+                    </div>
+                     <div class="form-group">
+                        <label for="edit-creationDate">创作时间:</label>
+                        <input type="date" id="edit-creationDate" name="creationDate" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit-type">作品类型:</label>
+                            <select id="edit-type" name="type">
+                                <option value="诗">诗</option>
+                                <option value="词">词</option>
+                                <option value="文言文">文言文</option>
+                                <option value="现代文">现代文</option>
+                                <option value="随笔">随笔</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="edit-genre-group">
+                            <label for="edit-genre" id="edit-genre-label">体裁:</label>
+                            <select id="edit-genre" name="genre">
+                                <option value="五言">五言</option>
+                                <option value="七言">七言</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-preface">序言 (可选):</label>
+                        <textarea id="edit-preface" name="preface" rows="4"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-notes">注释 (可选):</label>
+                        <textarea id="edit-notes" name="notes" rows="4"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>精句摘录:</label>
+                        <div class="quote-input-wrapper">
+                            <input type="text" id="edit-quote-input" placeholder="添加新精句...">
+                            <button type="button" id="edit-btn-add-quote" class="secondary" style="padding: 0 15px;">添加</button>
+                        </div>
+                        <ul id="edit-quote-list" class="quote-list"></ul>
+                    </div>
+                    <div class="form-group">
+                        <label>标签:</label>
+                        <div id="edit-tag-input-component" class="tag-input-container">
+                            <ul class="tag-list"></ul>
+                            <input type="text" class="tag-input" placeholder="输入创建新标签，或点击下方标签...">
+                        </div>
+                        <ul class="tag-suggestions"></ul>
+                        <input type="hidden" id="tags" name="tags">
+                        <div class="tag-cloud-wrapper">
+                            <span class="tag-cloud-label">点击添加已有标签:</span>
+                            <div id="edit-tag-cloud" class="tag-cloud"></div>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="primary">更新作品</button>
+                        <button type="button" id="cancel-edit" class="secondary">取消</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

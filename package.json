@@ -1,0 +1,35 @@
+{
+  "name": "mypoems",
+  "version": "1.0.0",
+  "author": "YourName",
+  "description": "个人数字化诗词书斋",
+  "main": "electron-main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --win --x64"
+  },
+  "build": {
+    "appId": "com.mypoems.app",
+    "productName": "MyPoems",
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": "portable"
+    },
+    "files": [
+      "**/*",
+      "!dist/*",
+      "!node_modules/electron/**/*",
+      "!node_modules/electron-builder/**/*"
+    ]
+  },
+  "devDependencies": {
+    "electron": "25.0.0",
+    "electron-builder": "^24.4.0"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.2"
+  }
+}

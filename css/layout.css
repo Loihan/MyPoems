@@ -1,0 +1,168 @@
+/* === 核心布局 (三栏：左固定 - 中自适应 - 右动态) === */
+.container { 
+    display: flex; 
+    width: 100%;
+    min-height: 100vh;
+    align-items: flex-start;
+}
+
+/* 1. 左侧导航栏 */
+.sidebar {
+    width: var(--sidebar-width);
+    position: sticky; 
+    top: 0;
+    height: 100vh;
+    flex-shrink: 0;
+    padding: calc(var(--spacing-unit) * 4);
+    border-right: 1px solid var(--color-border);
+    overflow-y: auto;
+    z-index: 100;
+    background-color: var(--color-background);
+    
+    /* 关键：让内部元素可以用 Flex 撑开，把精句推到底部 */
+    display: flex;
+    flex-direction: column; 
+}
+
+/* 侧边栏头部 */
+.sidebar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: calc(var(--spacing-unit) * 5); padding-right: var(--spacing-unit); }
+.sidebar-header h1 { font-size: 1.5rem; letter-spacing: 2px; padding-left: var(--spacing-unit); margin: 0; }
+#theme-toggle-btn { border: none; padding: 8px; }
+
+/* 侧边栏导航 */
+.sidebar-nav { flex-grow: 1; /* 占据剩余空间，但不强迫 */ }
+.sidebar-nav ul { list-style: none; padding: 0; margin: 0; }
+.sidebar-nav li a { display: flex; align-items: center; gap: calc(var(--spacing-unit) * 2); color: var(--color-text-body); text-decoration: none; padding: calc(var(--spacing-unit) * 1.5) calc(var(--spacing-unit) * 2); border-radius: var(--border-radius); margin-bottom: var(--spacing-unit); transition: background-color var(--transition-main), color var(--transition-main); }
+.sidebar-nav li a svg { width: 20px; height: 20px; fill: var(--color-text-muted); transition: fill var(--transition-main); }
+.sidebar-nav li a:hover { background-color: #f4f4f5; color: var(--color-text-primary); }
+body.dark-theme .sidebar-nav li a:hover { background-color: #27272a; }
+.sidebar-nav li a:hover svg { fill: var(--color-text-primary); }
+.sidebar-nav li a.active { background-color: #eef2ff; color: var(--color-accent); font-weight: 600; }
+body.dark-theme .sidebar-nav li a.active { background-color: rgba(59, 130, 246, 0.1); }
+.sidebar-nav li a.active svg { fill: var(--color-accent); }
+
+/* 2. 中间内容区域 */
+.main-content {
+    flex-grow: 1;
+    width: 0;
+    min-width: 0;
+    padding: calc(var(--spacing-unit) * 6);
+    min-height: 100vh;
+    transition: width 0.3s ease;
+}
+
+/* 3. 右侧阅读栏 */
+.reading-panel {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    width: 0;
+    background-color: var(--color-background);
+    border-left: 1px solid var(--color-border);
+    overflow-y: auto;
+    flex-shrink: 0;
+    z-index: 90;
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+    opacity: 0;
+    box-shadow: -5px 0 15px rgba(0,0,0,0.02);
+}
+.reading-panel.open {
+    width: var(--reading-panel-width);
+    opacity: 1;
+    padding: calc(var(--spacing-unit) * 4);
+    border-left: 1px solid var(--color-border-light);
+}
+
+/* 面板内容 */
+.panel-header { display: flex; justify-content: flex-end; margin-bottom: var(--spacing-unit); }
+#close-panel-btn { border: none; padding: 8px; }
+.panel-poem-title { font-size: 2.2rem; margin: 0 0 16px 0; line-height: 1.3; text-align: center; }
+.panel-poem-meta { display: flex; justify-content: center; flex-wrap: wrap; gap: 15px; font-size: 0.9rem; color: var(--color-text-muted); padding-bottom: 24px; margin-bottom: 32px; border-bottom: 1px solid var(--color-border); }
+
+.panel-poem-body { font-size: 1.15rem; line-height: 2.2; margin: 0; padding: 0 10px; }
+.poem-body-center { text-align: center; }
+.poem-body-left { text-align: left; }
+.panel-section { 
+    margin-top: 0; 
+    padding-top: 0; 
+    border-top: none; 
+}
+.panel-preface {
+    margin-bottom: 32px;
+    padding-bottom: 24px;
+    border-bottom: 1px dashed var(--color-border-light);
+}
+.panel-body-container {
+    margin: 20px 0;
+}
+.panel-notes {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px dashed var(--color-border-light);
+}
+.panel-section h4 { 
+    font-family: var(--font-sans); 
+    font-size: 0.85rem; 
+    color: var(--color-text-muted); 
+    margin-bottom: 12px; 
+    opacity: 0.8; 
+}
+
+.panel-quotes-section { margin-top: 30px; padding-top: 15px; border-top: 1px solid var(--color-border); color: var(--color-text-muted); font-size: 0.85rem; }
+.panel-single-quote { display: list-item; list-style-type: disc; margin-left: 1.2em; margin-bottom: 4px; font-family: var(--font-serif); }
+
+/* 4. 每日精句 (侧边栏底部) - 【修复重点】 */
+.daily-quote-container {
+    margin-top: auto; /* 自动推到底部 */
+    padding: 24px 0;
+    border-top: 1px solid var(--color-border);
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center; 
+    gap: 16px;
+    width: 100%;
+}
+
+.daily-quote-container:hover {
+    background-color: rgba(0,0,0,0.02);
+}
+body.dark-theme .daily-quote-container:hover {
+    background-color: rgba(255,255,255,0.05);
+}
+
+.daily-quote-content {
+    /* 竖排文字核心 */
+    writing-mode: vertical-rl; 
+    text-orientation: mixed;
+    
+    font-family: var(--font-serif);
+    font-size: 1rem;
+    line-height: 1.8;
+    color: var(--color-text-body); 
+    opacity: 0.8; 
+    max-height: 200px; 
+    letter-spacing: 2px;
+}
+
+.daily-quote-author {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    font-family: var(--font-sans);
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+    opacity: 0.6;
+}
+
+.daily-quote-author::before {
+    content: '—'; /* 破折号 */
+    display: block;
+    margin-bottom: 8px;
+    color: var(--color-accent);
+}
+
+/* 响应式 */
+@media (max-width: 1100px) {
+    .reading-panel.open { position: fixed; right: 0; width: 100%; max-width: 500px; box-shadow: -5px 0 20px rgba(0,0,0,0.1); }
+}

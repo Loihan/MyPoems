@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的诗词集</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- 引入拆分后的 CSS 文件 (顺序很重要) -->
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/pages.css">
+</head>
+<body>
+    <div class="container">
+        <!-- 1. 左侧导航栏 -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1>詩詞集</h1>
+                <button id="theme-toggle-btn" class="icon-button theme-toggle" title="切换深色模式">
+                    <svg id="theme-icon-moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                    <svg id="theme-icon-sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                </button>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="#" data-page="view"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 5c-1.42 0-2.7.73-3.46 1.86-.76-1.13-2.04-1.86-3.46-1.86s-2.7.73-3.46 1.86C8.84 5.73 7.56 5 6.14 5C4.24 5 3 6.24 3 8.14v9.72c0 1.9 1.24 3.14 3.14 3.14 1.42 0 2.7-.73 3.46-1.86.76 1.13 2.04 1.86 3.46 1.86s2.7-.73 3.46-1.86c.76 1.13 2.04 1.86 3.46 1.86 1.9 0 3.14-1.24 3.14-3.14V8.14C22 6.24 20.76 5 20 5zm-1.86 13c-.76-1.13-2.04-1.86-3.46-1.86s-2.7.73-3.46 1.86V8.86C11.96 7.73 13.24 7 14.66 7s2.7.73 3.46 1.86v9.14z"/></svg>作品总览</a></li>
+                    <li><a href="#" data-page="add"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 5.63l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83c.39-.39.39-1.02 0-1.41zM3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z"/></svg>添加新篇</a></li>
+                    <li><a href="#" data-page="manage"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/></svg>作品管理</a></li>
+                    <li><a href="#" data-page="tags"><!-- 图标: 标签/哈希 --><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10.9 2.1l-6.8 6.8c-.4.4-.4 1 0 1.4l8.8 8.8c.4.4 1 .4 1.4 0l6.8-6.8c.6-.6.9-1.4.9-2.3V5c0-1.1-.9-2-2-2h-5c-.9 0-1.7.3-2.3.9zM19 6c-.6 0-1-.4-1-1s.4-1 1-1 1 .4 1 1-.4 1-1 1zM6 16l-3.3 3.3c-.4.4-.4 1 0 1.4s1 .4 1.4 0L7.4 17.4"/></svg>索引管理</a></li>
+                    <li><a href="#" data-page="timeline"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6 2h12v6l-4 4 4 4v6H6v-6l4-4-4-4V2zm10 14.5l-4-4-4 4V20h8v-3.5zm-4-5l4-4V4H8v3.5l4 4z"/></svg>编年史</a></li>
+                    <li><a href="#" data-page="quotes"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>精句集</a></li>
+                    <li><a href="#" data-page="imagery"><!-- 图标: 羽毛笔/墨水 --><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm0-2a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm-5-8h2a2 2 0 0 0 2-2V8.5a.5.5 0 0 1 1 0V10a2 2 0 0 0 2 2h2a1 1 0 0 1 1 1v2.5a.5.5 0 0 1-1 0V13a2 2 0 0 0-2-2h-2a1 1 0 0 1-1-1v-1h-1v1a2 2 0 0 0 2 2h2a1 1 0 0 1 1 1v2.5a2.5 2.5 0 0 1-2.5 2.5h-3a2.5 2.5 0 0 1-2.5-2.5V12z"/></svg>意象簿</a></li>
+                    <li><a href="#" data-page="stats"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5 19h-4v-4h4v4zm6 0h-4v-8h4v8zm6 0h-4v-14h4v14zm6 0h-4v-22h4v22z"/></svg>笔耕录</a></li>
+                </ul>
+            </nav>
+            <div id="daily-quote-container" class="daily-quote-container"></div>    
+        </aside>
+
+        <!-- 2. 中间内容区域 -->
+        <main id="content" class="main-content">
+            <!-- 动态加载页面 -->
+        </main>
+
+        <!-- 3. 【新增】右侧阅读栏 (初始隐藏) -->
+        <aside id="reading-panel" class="reading-panel">
+            <div class="panel-header">
+                <button id="close-panel-btn" class="icon-button" title="关闭详情">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            <div id="panel-content-area" class="panel-content">
+                <!-- 诗词详情渲染到这里 -->
+            </div>
+        </aside>
+
+    </div>
+    <div id="notification"></div>
+    <script src="js/main.js"></script>
+</body>
+</html>
