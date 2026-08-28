@@ -11,7 +11,9 @@
     const searchInput = document.getElementById('search-input');
     const filters = document.getElementById('filters');
     const poemCounter = document.getElementById('poem-counter');
-    
+    const mobileFilterToggle = document.getElementById('mobile-filter-toggle');
+
+    // 筛选器 DOM 容器
     const typeFiltersContainer = document.getElementById('type-filters');
     const genreFiltersContainer = document.getElementById('genre-filters');
     const genreFiltersGroup = document.getElementById('genre-filters-container');
@@ -171,6 +173,16 @@
             const card = event.target.closest('.poem-card');
             if (card && card.dataset.filename) window.App.openPoemByFilename(card.dataset.filename);
         });
+        // 【新增】手机端折叠按钮点击事件
+        if (mobileFilterToggle) {
+            mobileFilterToggle.addEventListener('click', () => {
+                const isOpen = filters.classList.toggle('open');
+                const textSpan = mobileFilterToggle.querySelector('span');
+                if (textSpan) {
+                    textSpan.textContent = isOpen ? '收起筛选' : '展开筛选';
+                }
+            });
+        }
     }
 
     initialize();

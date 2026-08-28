@@ -15,6 +15,10 @@ body.dark-theme .masonry-quote-author { border-top-color: rgba(255,255,255,0.1);
 body.dark-theme .action-btn:hover { background-color: #3f3f46; }
 @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
 @media (max-width: 1024px) { #quotes-masonry-container { column-count: 2; } }
+@media (max-width: 768px) {
+    /* 精句集：手机端每张卡片单独占一行 */
+    #quotes-masonry-container { column-count: 1 !important; }
+}
 
 /* === 编年史 (Timeline) === */
 .timeline-wrapper { position: relative; padding: 8px 0; max-width: 900px; margin: 0 auto; }
@@ -815,3 +819,151 @@ body.dark-theme .ignore-tag { background-color: #3f3f46; }
 #insight-silence-days { color: #f59e0b; } /* 沉默-橙色 */
 #insight-busy-month { color: #ec4899; }   /* 密集-粉色 */
 #insight-fav-season { color: #10b981; }   /* 时节-绿色 */
+
+/* =========================================================
+   【新增】手机自适应微调 (pages 部分)
+   ========================================================= */
+
+/* 1. 索引管理左侧标签栏在电脑端和手机端整体缩窄 */
+.tags-sidebar {
+    width: 200px !important; /* 从 280px 缩窄为 200px */
+}
+
+@media (max-width: 768px) {
+    /* 手机端：改为上下堆叠，避免左右分栏过窄导致作品频繁换行 */
+    .tags-manager-layout {
+        flex-direction: column !important;
+        height: auto !important;
+        min-height: 0 !important;
+        gap: 12px !important;
+    }
+
+    .tags-sidebar {
+        width: 100% !important;
+        height: auto !important;
+    }
+
+    /* 标签列表改为横向滚动的标签条 */
+    .tags-list {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        overflow-y: hidden;
+        gap: 8px;
+        padding: 8px;
+    }
+
+    .tag-list-item {
+        flex-shrink: 0;
+        white-space: nowrap;
+        margin-bottom: 0;
+        border: 1px solid var(--color-border-light);
+        border-radius: 20px;
+        padding: 6px 12px;
+    }
+
+    .tags-content {
+        width: 100%;
+        overflow: visible;
+    }
+
+    /* 底部批量操作栏：固定在屏幕底部（底部导航之上），无需滚动即可见 */
+    .batch-bar {
+        position: fixed !important;
+        bottom: 72px !important;
+        left: 50% !important;
+        transform: translateX(-50%) translateY(150px) !important;
+        min-width: 0 !important;
+        width: calc(100% - 24px) !important;
+        max-width: 480px !important;
+        border-radius: 16px !important;
+        z-index: 900 !important;
+    }
+
+    .batch-bar.show {
+        transform: translateX(-50%) translateY(0) !important;
+    }
+
+    .batch-input-group input {
+        min-width: 0;
+        flex: 1;
+    }
+}
+
+
+/* 2. 编年史：手机端年份索引改为顶部横向吸顶条，便于点击 */
+@media (max-width: 768px) {
+    .timeline-year-nav {
+        display: block !important;
+        position: sticky !important;
+        top: 0 !important;
+        right: auto !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: auto !important;
+        z-index: 60 !important;
+        background: var(--color-background) !important;
+        padding: 8px 0 !important;
+    }
+
+    .year-nav-sticky-wrapper {
+        position: static !important;
+        transform: none !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important;
+        gap: 8px !important;
+        border-right: none !important;
+        border-bottom: 1px solid var(--color-border);
+        padding: 0 0 8px 0 !important;
+    }
+
+    .year-nav-item {
+        flex-shrink: 0 !important;
+        font-size: 0.85rem !important;
+        text-align: center !important;
+        padding: 4px 12px !important;
+        border: 1px solid var(--color-border-light);
+        border-radius: 16px;
+        background-color: var(--color-surface);
+        white-space: nowrap;
+    }
+
+    .year-nav-item::after {
+        display: none !important;
+    }
+}
+
+/* 3. 意象簿：手机端详情占据全屏 */
+@media (max-width: 768px) {
+    /* 当分栏激活时 */
+    .imagery-content-wrapper.split-view .word-rank-grid {
+        width: 100% !important; /* 左栏依然保持全宽 (它其实被盖在下面了) */
+    }
+
+    .imagery-content-wrapper.split-view .imagery-detail-panel {
+        position: fixed !important; /* 改为固定定位，全屏覆盖 */
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        max-width: 100% !important;
+        z-index: 3000 ; /* 层级高于底部导航和一切元素 */
+        padding: 24px !important;
+        border-left: none !important;
+        background-color: var(--color-background) !important; /* 使用背景色，遮挡后面的列表 */
+    }
+
+    /* 内部滚动，防止底部按钮被导航栏遮挡 */
+    .imagery-content-wrapper.split-view .detail-content-scroll {
+        padding-bottom: 120px !important; 
+    }
+
+    /* 关闭按钮在全屏下稍微放大，更容易点击 */
+    .imagery-detail-panel .panel-close-btn {
+        top: 15px !important;
+        right: 15px !important;
+        font-size: 2rem !important;
+    }
+}

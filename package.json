@@ -6,7 +6,11 @@
   "main": "electron-main.js",
   "scripts": {
     "start": "electron .",
-    "build": "electron-builder --win --x64"
+    "build": "electron-builder --win --x64",
+    "seed": "node scripts/make-seed.js",
+    "web": "node scripts/build-www.js",
+    "android:prepare": "node scripts/make-seed.js && node scripts/build-www.js && cap sync",
+    "android:open": "cap open android"
   },
   "build": {
     "appId": "com.mypoems.app",
@@ -29,6 +33,11 @@
     "electron-builder": "^24.4.0"
   },
   "dependencies": {
+    "@capacitor/android": "^8.5.0",
+    "@capacitor/cli": "^8.5.0",
+    "@capacitor/core": "^8.5.0",
+    "@capacitor/filesystem": "^8.1.3",
+    "chart.js": "^4.5.1",
     "cors": "^2.8.5",
     "express": "^4.18.2"
   }

@@ -29,7 +29,7 @@ function createWindow() {
     // 3. 加载你的本地服务地址
     // 等待服务器启动的一小会儿
     setTimeout(() => {
-        mainWindow.loadURL('http://localhost:3000');
+        mainWindow.loadURL('http://localhost:9696');
     }, 1000);
 
     mainWindow.on('closed', function () {

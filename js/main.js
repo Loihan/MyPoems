@@ -54,6 +54,12 @@
                 if (!htmlResponse.ok) throw new Error(`无法加载 html/${pageName}.html`);
                 contentArea.innerHTML = await htmlResponse.text();
 
+                // 【修复】换页时自动跳到最上面 (同时重置窗口和中栏容器)
+                window.scrollTo({ top: 0, behavior: 'instant' });
+                if (contentArea) {
+                    contentArea.scrollTop = 0;
+                }
+
                 // 【修改】去 js/ 文件夹找
                 const scriptResponse = await fetch(`js/${pageName}.js`);
                 if (scriptResponse.ok) {

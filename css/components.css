@@ -145,3 +145,78 @@ body.dark-theme .quote-list-item { border-color: var(--color-border); }
 #notification.show { opacity: 1; transform: translateY(0); }
 #notification.success { background-color: #059669; }
 #notification.error { background-color: #dc2626; }
+
+/* =========================================================
+   【新增】手机自适应微调 (components 部分)
+   ========================================================= */
+@media (max-width: 768px) {
+    /* 1. 界面整体等比例缩小为 80% */
+    body {
+        zoom: 0.8;
+    }
+    /* 2. 作品总览：折叠筛选器样式 */
+    #mobile-filter-toggle {
+        display: inline-flex !important; /* 手机端显示按钮 */
+    }
+    #filters {
+        display: none; /* 默认折叠 */
+        background-color: var(--color-surface);
+        border: 1px solid var(--color-border);
+        box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+
+    #filters.open {
+        display: flex !important; /* 点击后展开 */
+    }
+    /* 3. 总览卡片单列排布 */
+    #poems-list {
+        grid-template-columns: 1fr !important;
+        gap: 16px;
+    }
+
+    .poem-card {
+        padding: 20px;
+    }
+
+    /* 4. 管理页控制区堆叠 */
+    .manage-controls {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+    .search-group {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    /* 5. 管理页表格转化为可横向滚动的容器 */
+    .table-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    .manage-table {
+        min-width: 600px; /* 保证在手机上表格有最小宽度，不会挤成一团 */
+    }
+
+    /* 6. 添加新篇 / 管理页编辑模态框：上下排 */
+    .poem-editor-layout {
+        grid-template-columns: 1fr !important; /* 强制单列 */
+        gap: 24px !important;
+    }
+
+    .main-content-column {
+        order: 1; /* 内容在上 */
+    }
+
+    .metadata-sidebar-column {
+        order: 2; /* 设置在下 */
+        background-color: transparent !important; /* 节省边框和背景 */
+        border: none !important;
+        padding: 0 !important;
+    }
+
+    /* 缩小输入框高度 */
+    .main-content-column textarea {
+        min-height: 40vh !important;
+    }
+}

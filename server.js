@@ -11,7 +11,7 @@ const fs = require('fs');
 const path = require('path');
 
 const app = express();
-const PORT = 3000;
+const PORT = 9696;
 
 // 路径定义
 const poemsDirectory = path.join(__dirname, 'poems');

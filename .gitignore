@@ -1,23 +1,26 @@
-# 忽略依赖库
+# ===== 依赖 =====
 node_modules/
+
+# ===== 构建产物 =====
 dist/
+www/
 *.exe
+*.apk
+*.lnk
+
+# ===== 环境与缓存 =====
 .env
-
-# 忽略个人诗词数据文件 (关键：保护隐私)
-# 我们只保留文件夹结构，不上传具体的 .json 作品
-poems/*.json
-
-# 如果你希望在 GitHub 上展示一个示例，
-# 可以不忽略某个特定的 demo 文件，例如：
-# !poems/demo_sample.json
-
-# 忽略屏蔽词配置文件
-ignore_words.json
-
-# 忽略系统文件
 .DS_Store
 Thumbs.db
-
-# 忽略日志文件
 *.log
+
+# ===== 私有诗词数据（关键：保护隐私，切勿上传）=====
+# 每首诗是 poems/ 下的一个独立 .json 文件
+poems/*.json
+# 屏蔽词配置
+ignore_words.json
+# 打包生成的诗词种子数据（内含全部诗词）
+js/seed-data.js
+
+# ===== 个人临时笔记 =====
+QUESTION.md
