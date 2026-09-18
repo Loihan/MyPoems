@@ -1,86 +1,66 @@
-<!-- =================================================================== -->
-<!-- MyPoems - 作品总览页面 (view.html)                                -->
-<!-- =================================================================== -->
+<!-- ===================================================================
+     MyPoems · 作品总览 (view.html)
+     =================================================================== -->
 
-<h2 class="page-title">作品总览</h2>
+<header class="page-head">
+    <span class="seal page-head__seal" aria-hidden="true">览</span>
+    <div class="page-head__text">
+        <h2 class="page-title">作品总览</h2>
+        <p class="page-subtitle">搜检旧作 · 点击卡片于右侧展卷</p>
+    </div>
+</header>
 
-<!-- 功能区：包含搜索、筛选和计数器 -->
-<div id="controls">
+<section id="controls" aria-label="检索与筛选">
     <div class="search-bar">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="search-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="search-icon" aria-hidden="true">
             <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd" />
         </svg>
-        <input type="search" id="search-input" placeholder="在正文或标题中搜索...">
-        <!-- 【新增】仅在手机端显示的折叠/展开筛选按钮 -->
-        <button id="mobile-filter-toggle" class="secondary button" style="display: none; margin-top: 12px; width: 100%; justify-content: center; align-items: center; gap: 8px;">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
-            <span>展开筛选</span>
-        </button>
+        <input type="search" id="search-input" placeholder="在标题或正文中搜索…" aria-label="搜索作品" autocomplete="off">
     </div>
 
-    <!-- 筛选器容器 -->
-<div id="filters">
-<!-- 时间筛选行 -->
-<div class="filter-row">
-<div class="filter-group">
-<strong>创作年份:</strong>
-<!-- 新的年份筛选容器 -->
-<div id="year-filters"></div>
-</div>
-</div>
-<div class="filter-row">
-<div class="filter-group">
-<strong>创作月份:</strong>
-<!-- 新的月份筛选容器 -->
-<div id="month-filters"></div>
-</div>
-</div>
+    <button type="button" id="mobile-filter-toggle" class="btn btn--secondary">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 5h18v2H3V5zm3 6h12v2H6v-2zm3 6h6v2H9v-2z"/></svg>
+        <span>展开筛选</span>
+    </button>
 
-        <!-- 类型筛选行 -->
+    <div id="filters" role="group" aria-label="筛选条件">
+        <div class="filter-row">
+            <div class="filter-group">
+                <strong>创作年份</strong>
+                <div id="year-filters"></div>
+            </div>
+        </div>
+
+        <div class="filter-row">
+            <div class="filter-group">
+                <strong>创作月份</strong>
+                <div id="month-filters"></div>
+            </div>
+        </div>
+
         <div class="filter-row">
             <div class="filter-group" id="type-filters-container">
-                <strong>类型:</strong>
-                <div id="type-filters">
-                    <!-- 类型筛选选项将由JS动态生成 -->
-                </div>
+                <strong>类型</strong>
+                <div id="type-filters"></div>
             </div>
         </div>
 
-        <!-- 体裁/词牌名筛选行 (默认隐藏) -->
         <div class="filter-row">
             <div class="filter-group" id="genre-filters-container" style="display: none;">
-                <strong>体裁:</strong>
-                <div id="genre-filters">
-                    <!-- 体裁筛选选项将由JS动态生成 -->
-                </div>
+                <strong>体裁</strong>
+                <div id="genre-filters"></div>
             </div>
         </div>
+
         <div class="filter-row">
             <div class="filter-group" id="tag-filters-container">
-                <strong>标签:</strong>
-                <!-- 新的标签云容器 -->
+                <strong>标签</strong>
                 <div id="tag-filters"></div>
             </div>
         </div>
     </div>
 
-    <!-- 作品计数器 -->
-    <div id="poem-counter">
-        <!-- 计数信息将由JS动态生成 -->
-    </div>
-</div>
+    <div id="poem-counter" aria-live="polite"></div>
+</section>
 
-<!-- 作品列表容器 -->
-<div id="poems-list" class="poem-grid-layout">
-    <!-- 作品卡片将由JS动态加载到这里 -->
-</div>
-
-
-<!-- 诗词详情模态框 (Modal) -->
-<div id="view-modal" class="modal-overlay">
-    <div class="modal-content">
-        <button id="view-modal-close-btn" class="modal-close-btn">&times;</button>
-        <!-- 作品的详细内容将由JS动态注入到这里 -->
-        <div id="modal-poem-content"></div>
-    </div>
-</div>
+<div id="poems-list" class="poem-grid-layout"></div>

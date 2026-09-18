@@ -1,0 +1,75 @@
+<!-- ===================================================================
+     MyPoems · 设置 (settings.html)
+     =================================================================== -->
+
+<header class="page-head">
+    <span class="seal page-head__seal" aria-hidden="true">设</span>
+    <div class="page-head__text">
+        <h2 class="page-title">设置</h2>
+        <p class="page-subtitle">调校 · 外观配色与阅读方式</p>
+    </div>
+</header>
+
+<!-- ============ 外观设置 ============ -->
+<section class="settings-block" aria-labelledby="settings-appearance">
+    <div class="settings-block__head">
+        <h3 class="section-title" id="settings-appearance">外观设置</h3>
+        <p class="settings-block__hint">
+            共 <strong id="theme-count">0</strong> 套配色 ·
+            浅色 <strong id="theme-light-count">0</strong> ·
+            深色 <strong id="theme-dark-count">0</strong>
+            · 点选即时生效
+        </p>
+    </div>
+
+    <div id="theme-picker" class="theme-picker" role="radiogroup" aria-label="外观配色预设"></div>
+</section>
+
+<!-- ============ 阅读设置 ============ -->
+<section class="settings-block" aria-labelledby="settings-reading">
+    <div class="settings-block__head">
+        <h3 class="section-title" id="settings-reading">阅读设置</h3>
+        <p class="settings-block__hint">点开一首作品时，阅读栏以何种方式出现。</p>
+    </div>
+
+    <div id="reader-modes" class="reader-modes" role="radiogroup" aria-label="阅读栏呈现方式">
+        <button type="button" class="mode-card" data-mode="push" role="radio" aria-checked="false">
+            <span class="mode-card__icon" aria-hidden="true">
+                <svg viewBox="0 0 48 34">
+                    <rect x="1" y="1" width="46" height="32" rx="4" class="mc-frame"/>
+                    <rect x="8" y="6" width="20" height="4" rx="2" class="mc-line"/>
+                    <rect x="8" y="14" width="16" height="3" rx="1.5" class="mc-line mc-line--faint"/>
+                    <rect x="8" y="21" width="18" height="3" rx="1.5" class="mc-line mc-line--faint"/>
+                    <rect x="33" y="1" width="14" height="32" rx="4" class="mc-panel"/>
+                </svg>
+            </span>
+            <span class="mode-card__body">
+                <strong>右侧推出</strong>
+                <span>阅读栏挤压左侧界面：一边读，一边照常翻检、搜索、贴签。</span>
+            </span>
+            <span class="mode-card__check" aria-hidden="true"></span>
+        </button>
+
+        <button type="button" class="mode-card" data-mode="modal" role="radio" aria-checked="false">
+            <span class="mode-card__icon" aria-hidden="true">
+                <svg viewBox="0 0 48 34">
+                    <rect x="1" y="1" width="46" height="32" rx="4" class="mc-frame"/>
+                    <rect x="8" y="6" width="20" height="4" rx="2" class="mc-line mc-line--faint"/>
+                    <rect x="8" y="14" width="16" height="3" rx="1.5" class="mc-line mc-line--faint"/>
+                    <rect x="8" y="21" width="18" height="3" rx="1.5" class="mc-line mc-line--faint"/>
+                    <rect x="22" y="5" width="24" height="24" rx="4" class="mc-panel mc-panel--float"/>
+                </svg>
+            </span>
+            <span class="mode-card__body">
+                <strong>浮层模态</strong>
+                <span>虚化并遮住背景，专注读完这一篇，点叉叉才回到列表。</span>
+            </span>
+            <span class="mode-card__check" aria-hidden="true"></span>
+        </button>
+    </div>
+
+    <p class="settings-note">
+        <span aria-hidden="true">※</span>
+        窄屏（不超过 1024px）下两种方式都会以浮层呈现，以免正文被挤得过窄。
+    </p>
+</section>

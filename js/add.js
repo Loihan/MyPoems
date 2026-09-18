@@ -8,11 +8,26 @@
     const form = document.getElementById('add-poem-form');
     if (!form) { return; }
 
+    function esc(value) {
+        return String(value == null ? '' : value)
+            .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+
     const DRAFT_STORAGE_KEY = 'addPoemFormDraft';
     const typeSelect = document.getElementById('poem-type');
     const genreGroup = document.getElementById('poem-genre-group');
     const genreLabel = document.getElementById('poem-genre-label');
     const contentTextarea = document.getElementById('poem-content');
+
+    // 界面反馈元素
+    const statsEl = document.getElementById('editor-stats');
+    const draftChip = document.getElementById('draft-chip');
+    const draftTextEl = document.getElementById('draft-text');
+    const clearDraftBtn = document.getElementById('btn-clear-draft');
+    const prefaceEl = document.getElementById('poem-preface');
+    const notesEl = document.getElementById('poem-notes');
+    const creationDateInput = document.getElementById('poem-creationDate');
 
     // 精句相关元素
     const quoteInput = document.getElementById('add-quote-input');
@@ -23,6 +38,33 @@
     if (!typeSelect || !genreGroup || !genreLabel || !contentTextarea) {
         console.error('致命错误: add.html 页面缺少关键表单元素。');
         return;
+    }
+
+    /* ------------------------------------------------------------------
+     * 界面反馈：字数/段数、草稿状态、快捷键
+     * ---------------------------------------------------------------- */
+    function hhmm() {
+        const d = new Date();
+        return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+    }
+
+    function todayISO() {
+        const d = new Date();
+        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    }
+
+    function updateStats() {
+        if (!statsEl) return;
+        const content = contentTextarea.value || '';
+        const chars = content.replace(/\s/g, '').length;
+        const segments = content.split('\n').filter(l => l.trim()).length;
+        statsEl.textContent = `${chars} 字 · ${segments} 段`;
+    }
+
+    function setDraftState(state, text) {
+        if (draftChip) draftChip.dataset.state = state;
+        if (draftTextEl && text) draftTextEl.textContent = text;
+        if (clearDraftBtn) clearDraftBtn.hidden = !sessionStorage.getItem(DRAFT_STORAGE_KEY);
     }
 
     /**
@@ -52,7 +94,7 @@
 
         // 渲染已选标签
         function renderSelectedTags() {
-            tagList.innerHTML = selectedTags.map(tag => `<li class="tag-item">${tag}<span class="remove-tag" data-tag="${tag}">&times;</span></li>`).join('');
+            tagList.innerHTML = selectedTags.map(tag => `<li class="tag-item">${esc(tag)}<span class="remove-tag" data-tag="${esc(tag)}" role="button" aria-label="移除标签">&times;</span></li>`).join('');
             hiddenInput.value = selectedTags.join(',');
             form.dispatchEvent(new Event('input')); // 触发保存草稿
             renderTagCloud(); // 重新渲染标签云（移除已选的）
@@ -65,12 +107,12 @@
             const availableTags = allTags.filter(tag => !selectedTags.includes(tag));
             
             if (availableTags.length === 0) {
-                cloudContainer.innerHTML = '<span style="font-size:0.8rem;color:#999;">暂无更多可选标签</span>';
+                cloudContainer.innerHTML = '<span class="stat-empty">暂无更多可选标签</span>';
                 return;
             }
 
             cloudContainer.innerHTML = availableTags.map(tag => 
-                `<div class="tag-cloud-item" data-tag="${tag}">${tag}</div>`
+                `<div class="tag-cloud-item" data-tag="${esc(tag)}">${esc(tag)}</div>`
             ).join('');
         }
 
@@ -79,7 +121,7 @@
             if (!query) { suggestions.style.display = 'none'; return; }
             const filtered = allTags.filter(tag => tag.toLowerCase().includes(query.toLowerCase()) && !selectedTags.includes(tag));
             if (filtered.length > 0) {
-                suggestions.innerHTML = filtered.map(tag => `<li data-tag="${tag}">${tag}</li>`).join('');
+                suggestions.innerHTML = filtered.map(tag => `<li data-tag="${esc(tag)}">${esc(tag)}</li>`).join('');
                 suggestions.style.display = 'block';
             } else {
                 suggestions.style.display = 'none';
@@ -152,8 +194,8 @@
         if (!quoteListEl) return;
         quoteListEl.innerHTML = currentQuotes.map((quote, index) => `
             <li class="quote-list-item">
-                <span>${quote}</span>
-                <span class="remove-quote" data-index="${index}">&times;</span>
+                <span>${esc(quote)}</span>
+                <span class="remove-quote" data-index="${index}" role="button" aria-label="删除此句">&times;</span>
             </li>
         `).join('');
     }
@@ -188,7 +230,20 @@
         const formData = new FormData(form);
         const data = Object.fromEntries(formData.entries());
         data.quotes = currentQuotes;
+
+        // 只有真正写了东西才留草稿（类型/时间等有默认值，不算）
+        const meaningful = ['title', 'content', 'preface', 'notes', 'tags']
+            .some(k => String(data[k] == null ? '' : data[k]).trim());
+        if (!meaningful && currentQuotes.length === 0) {
+            sessionStorage.removeItem(DRAFT_STORAGE_KEY);
+            updateStats();
+            setDraftState('idle', '尚无草稿');
+            return;
+        }
+
         sessionStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(data));
+        updateStats();
+        setDraftState('dirty', `草稿已存 · ${hhmm()}`);
     }
 
     function loadDraft() {
@@ -209,8 +264,12 @@
                 renderQuotes();
             }
             updateGenreField();
+            setDraftState('saved', '已恢复草稿');
             showNotification('已恢复您上次未完成的草稿。', 'success');
+        } else {
+            setDraftState('idle', '尚无草稿');
         }
+        updateStats();
     }
     
     form.addEventListener('submit', async function(event) {
@@ -236,6 +295,40 @@
     typeSelect.addEventListener('change', updateGenreField);
     form.addEventListener('input', saveDraft);
 
+    /* 清空草稿：重置表单并丢弃已存草稿 */
+    if (clearDraftBtn) {
+        clearDraftBtn.addEventListener('click', async () => {
+            const ok = await window.App.confirm({
+                tone: 'danger',
+                title: '清空草稿',
+                message: '已填写的标题、正文、序言、注释、摘句与标签都会一并丢弃。',
+                confirmText: '清空',
+                cancelText: '继续写'
+            });
+            if (!ok) return;
+
+            sessionStorage.removeItem(DRAFT_STORAGE_KEY);
+            form.reset();
+            tagInputInstance.setTags([]);
+            currentQuotes = [];
+            renderQuotes();
+            if (creationDateInput) creationDateInput.value = todayISO();
+            updateGenreField();
+            sessionStorage.removeItem(DRAFT_STORAGE_KEY);
+            updateStats();
+            setDraftState('idle', '尚无草稿');
+            showNotification('草稿已清空', 'success');
+        });
+    }
+
+    /* Ctrl / Cmd + S 保存 */
+    document.addEventListener('keydown', (event) => {
+        if ((event.ctrlKey || event.metaKey) && String(event.key).toLowerCase() === 's') {
+            event.preventDefault();
+            form.requestSubmit ? form.requestSubmit() : form.dispatchEvent(new Event('submit', { cancelable: true }));
+        }
+    });
+
     if (addQuoteBtn && quoteInput && quoteListEl) {
         addQuoteBtn.addEventListener('click', addQuote);
         quoteInput.addEventListener('keydown', (e) => {
@@ -253,12 +346,9 @@
     
     // --- 初始化: 传入第三个参数 'add-tag-cloud' ---
     const tagInputInstance = initializeTagInput('add-tag-input-component', 'poem-tags', 'add-tag-cloud');
-    
-    const creationDateInput = document.getElementById('poem-creationDate');
-    if (creationDateInput) {
-        const today = new Date();
-        creationDateInput.value = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-    }
+
+    if (creationDateInput) creationDateInput.value = todayISO();
     loadDraft();
     updateGenreField();
+    updateStats();
 })();

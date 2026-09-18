@@ -1,34 +1,339 @@
-@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&display=swap');
+/* ===================================================================
+   MyPoems · 设计令牌 (Design Tokens)
+   主题意象：宣纸 · 墨迹 · 朱砂印
+   外观预设见文末「主题预设」，由「设置 · 外观」切换。
+
+   注意：CSS 自定义属性在「声明它的那个元素」上完成 var() 替换，
+   所以派生令牌（--cinnabar 等）必须与基色（--a1-rgb）声明在同一层，
+   否则子层覆盖基色不会重算。
+   =================================================================== */
 
 :root {
-    --font-serif: 'Noto Serif SC', serif;
-    --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
-    
-    /* 浅色主题变量 */
-    --color-background: #fdfdfd;
-    --color-surface: #ffffff;
-    --color-border: #eeeeee;
-    --color-border-light: #dcdcdc;
-    --color-text-primary: #1a1a1a;
-    --color-text-body: #404040;
-    --color-text-muted: #888888;
-    --color-accent: #3b82f6;
-    
-    --spacing-unit: 8px;
-    --border-radius: 6px;
-    --sidebar-width: 240px;
-    --reading-panel-width: 600px;
-    --transition-main: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+    /* ---------- 字体 ---------- */
+    --font-serif: "Noto Serif SC", "Source Han Serif SC", "Songti SC", "STSong", "SimSun", Georgia, "Times New Roman", serif;
+    --font-kai: "Kaiti SC", "KaiTi", "STKaiti", "楷体", "Noto Serif SC", "Songti SC", serif;
+    --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    --font-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+
+    /* ---------- 尺度 ---------- */
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 24px;
+    --space-6: 32px;
+    --space-7: 48px;
+    --space-8: 64px;
+
+    --r-xs: 6px;
+    --r-sm: 9px;
+    --r-md: 13px;
+    --r-lg: 18px;
+    --r-xl: 26px;
+    --r-pill: 999px;
+
+    /* ---------- 版式尺寸 ---------- */
+    --rail-w: 246px;
+    --rail-w-mini: 78px;
+    --reader-w: 640px;
+    --topbar-h: 60px;
+    --stage-max: 1180px;
+
+    /* ---------- 动效 ---------- */
+    --dur-fast: 140ms;
+    --dur: 240ms;
+    --dur-slow: 460ms;
+    --ease: cubic-bezier(0.2, 0, 0, 1);
+    --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+    --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+    color-scheme: light;
 }
 
-/* 深色主题覆盖 */
+/* ===================================================================
+   派生令牌：与主题基色同层声明，换主题即自动重算
+   =================================================================== */
+:root,
+[data-theme] {
+    --cinnabar: rgb(var(--a1-rgb));
+    --cinnabar-ink: rgb(var(--a1-ink-rgb));
+    --cinnabar-soft: rgb(var(--a1-rgb) / 0.10);
+    --cinnabar-ring: rgb(var(--a1-rgb) / 0.26);
+
+    --accent: var(--cinnabar);
+    --accent-soft: var(--cinnabar-soft);
+
+    --jade: rgb(var(--a2-rgb));
+    --jade-soft: rgb(var(--a2-rgb) / 0.12);
+
+    --gold: rgb(var(--a3-rgb));
+    --gold-soft: rgb(var(--a3-rgb) / 0.12);
+
+    --indigo: rgb(var(--a2-rgb));
+    --indigo-soft: rgb(var(--a2-rgb) / 0.12);
+
+    --danger: #b3261e;
+    --danger-soft: rgba(179, 38, 30, 0.10);
+    --success: #2f7d5f;
+    --success-soft: rgba(47, 125, 95, 0.12);
+
+    --texture-paper:
+        radial-gradient(circle at 12% 8%, rgb(255 255 255 / 0.55), transparent 42%),
+        radial-gradient(circle at 88% 4%, rgb(var(--a1-rgb) / 0.05), transparent 38%),
+        radial-gradient(circle at 76% 92%, rgb(var(--a2-rgb) / 0.07), transparent 46%);
+
+    /* 体裁 / 类型色（浅色基调） */
+    --type-shi: #35597f;      --type-shi-bg: rgba(53, 89, 127, 0.12);
+    --type-ci: #a43a6b;       --type-ci-bg: rgba(164, 58, 107, 0.12);
+    --type-wenyan: #a06a2c;   --type-wenyan-bg: rgba(160, 106, 44, 0.14);
+    --type-xiandai: #2f7d6a;  --type-xiandai-bg: rgba(47, 125, 106, 0.12);
+    --type-suibi: #6b5aa8;    --type-suibi-bg: rgba(107, 90, 168, 0.12);
+    --type-other: #7b7266;    --type-other-bg: rgba(123, 114, 102, 0.12);
+
+    /* 阴影（浅色基调） */
+    --shadow-1: 0 1px 2px rgba(45, 35, 20, 0.06), 0 1px 1px rgba(45, 35, 20, 0.04);
+    --shadow-2: 0 2px 6px rgba(45, 35, 20, 0.07), 0 8px 20px -12px rgba(45, 35, 20, 0.18);
+    --shadow-3: 0 10px 30px -12px rgba(45, 35, 20, 0.24), 0 2px 8px rgba(45, 35, 20, 0.06);
+    --shadow-4: 0 24px 60px -20px rgba(30, 22, 10, 0.35), 0 4px 12px rgba(30, 22, 10, 0.08);
+    --shadow-ink: 0 0 0 1px var(--line), var(--shadow-1);
+}
+
+/* ===================================================================
+   深色基调的公共覆写（所有深色预设共用；由 js 加 .dark-theme 类）
+   =================================================================== */
 body.dark-theme {
-    --color-background: #18181b;
-    --color-surface: #27272a;
-    --color-border: #3f3f46;
-    --color-border-light: #52525b;
-    --color-text-primary: #f4f4f5;
-    --color-text-body: #d4d4d8;
-    --color-text-muted: #a1a1aa;
-    --color-accent: #60a5fa;
+    color-scheme: dark;
+
+    --texture-paper:
+        radial-gradient(circle at 14% 6%, rgb(var(--a1-rgb) / 0.10), transparent 46%),
+        radial-gradient(circle at 86% 12%, rgb(var(--a2-rgb) / 0.09), transparent 44%),
+        radial-gradient(circle at 50% 108%, rgb(var(--a3-rgb) / 0.10), transparent 52%);
+
+    --danger: #ef7d72;
+    --danger-soft: rgba(239, 125, 114, 0.16);
+    --success: #6ec9a4;
+    --success-soft: rgba(110, 201, 164, 0.16);
+
+    --type-shi: #8fb6e0;      --type-shi-bg: rgba(143, 182, 224, 0.16);
+    --type-ci: #e79ac0;       --type-ci-bg: rgba(231, 154, 192, 0.16);
+    --type-wenyan: #e0b478;   --type-wenyan-bg: rgba(224, 180, 120, 0.16);
+    --type-xiandai: #7fd3bb;  --type-xiandai-bg: rgba(127, 211, 187, 0.16);
+    --type-suibi: #b9a8f0;    --type-suibi-bg: rgba(185, 168, 240, 0.16);
+    --type-other: #a49b8c;    --type-other-bg: rgba(164, 155, 140, 0.16);
+
+    --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --shadow-2: 0 2px 8px rgba(0, 0, 0, 0.42), 0 10px 24px -14px rgba(0, 0, 0, 0.7);
+    --shadow-3: 0 12px 32px -14px rgba(0, 0, 0, 0.75), 0 2px 10px rgba(0, 0, 0, 0.4);
+    --shadow-4: 0 28px 64px -22px rgba(0, 0, 0, 0.85), 0 6px 16px rgba(0, 0, 0, 0.5);
+}
+
+/* ===================================================================
+   主题预设（浅色 9 种）
+   =================================================================== */
+
+/* ---------- 1. 宣纸（默认） ---------- */
+:root,
+[data-theme="paper"] {
+    --paper: #f4efe4;
+    --paper-raise: #fffdf7;
+    --paper-sunken: #ebe3d4;
+    --paper-veil: rgba(255, 253, 247, 0.78);
+    --grain: rgba(120, 96, 62, 0.05);
+
+    --ink: #1d1913;
+    --ink-body: #3b342a;
+    --ink-muted: #8a7e6d;
+    --ink-faint: #b6ab99;
+
+    --line: rgba(29, 25, 19, 0.10);
+    --line-strong: rgba(29, 25, 19, 0.18);
+
+    --a1-rgb: 178 58 44;      /* 朱砂 */
+    --a1-ink-rgb: 141 43 32;
+    --a2-rgb: 47 107 92;      /* 竹青 */
+    --a3-rgb: 168 128 47;     /* 赭金 */
+}
+
+/* ---------- 2. 月白 · 冷蓝 ---------- */
+[data-theme="moonwhite"] {
+    --paper: #eef1f6; --paper-raise: #f9fbfe; --paper-sunken: #e2e7f0;
+    --paper-veil: rgba(249, 251, 254, 0.78); --grain: rgba(70, 90, 130, 0.045);
+    --ink: #1a1f2b; --ink-body: #39414f; --ink-muted: #77808f; --ink-faint: #a8b0bd;
+    --line: rgba(26, 31, 43, 0.10); --line-strong: rgba(26, 31, 43, 0.18);
+    --a1-rgb: 58 92 156; --a1-ink-rgb: 42 70 124; --a2-rgb: 72 112 142; --a3-rgb: 150 130 84;
+}
+
+/* ---------- 3. 青瓷 · 青绿 ---------- */
+[data-theme="celadon"] {
+    --paper: #eaf1ee; --paper-raise: #f7fbf9; --paper-sunken: #dee8e3;
+    --paper-veil: rgba(247, 251, 249, 0.78); --grain: rgba(40, 90, 75, 0.045);
+    --ink: #16211d; --ink-body: #33423c; --ink-muted: #74857e; --ink-faint: #a6b5ae;
+    --line: rgba(22, 33, 29, 0.10); --line-strong: rgba(22, 33, 29, 0.18);
+    --a1-rgb: 45 105 90; --a1-ink-rgb: 30 78 66; --a2-rgb: 78 122 104; --a3-rgb: 158 138 88;
+}
+
+/* ---------- 4. 藕荷 · 紫粉 ---------- */
+[data-theme="lilac"] {
+    --paper: #f4eef2; --paper-raise: #fdf9fc; --paper-sunken: #ece1e8;
+    --paper-veil: rgba(253, 249, 252, 0.78); --grain: rgba(120, 60, 95, 0.045);
+    --ink: #241b21; --ink-body: #43383f; --ink-muted: #877a83; --ink-faint: #b8abb3;
+    --line: rgba(36, 27, 33, 0.10); --line-strong: rgba(36, 27, 33, 0.18);
+    --a1-rgb: 152 62 108; --a1-ink-rgb: 120 44 84; --a2-rgb: 92 92 152; --a3-rgb: 170 132 92;
+}
+
+/* ---------- 5. 秋香 · 暖黄 ---------- */
+[data-theme="autumn"] {
+    --paper: #f5efdd; --paper-raise: #fdfaf0; --paper-sunken: #ebe3cb;
+    --paper-veil: rgba(253, 250, 240, 0.78); --grain: rgba(130, 100, 40, 0.05);
+    --ink: #22201a; --ink-body: #43402f; --ink-muted: #85806a; --ink-faint: #b6b09a;
+    --line: rgba(34, 32, 26, 0.10); --line-strong: rgba(34, 32, 26, 0.18);
+    --a1-rgb: 168 112 34; --a1-ink-rgb: 132 86 24; --a2-rgb: 96 110 58; --a3-rgb: 150 96 44;
+}
+
+/* ---------- 6. 雪松 · 松绿 ---------- */
+[data-theme="cedar"] {
+    --paper: #eef1e9; --paper-raise: #fafcf7; --paper-sunken: #e2e8db;
+    --paper-veil: rgba(250, 252, 247, 0.78); --grain: rgba(60, 90, 55, 0.045);
+    --ink: #1b2118; --ink-body: #394136; --ink-muted: #7a8474; --ink-faint: #adb6a6;
+    --line: rgba(27, 33, 24, 0.10); --line-strong: rgba(27, 33, 24, 0.18);
+    --a1-rgb: 72 106 70; --a1-ink-rgb: 52 82 50; --a2-rgb: 50 102 112; --a3-rgb: 148 122 62;
+}
+
+/* ---------- 7. 檀木 · 棕褐 ---------- */
+[data-theme="sandal"] {
+    --paper: #f2e9e0; --paper-raise: #fcf6ef; --paper-sunken: #e8dbcd;
+    --paper-veil: rgba(252, 246, 239, 0.78); --grain: rgba(110, 70, 40, 0.05);
+    --ink: #241b15; --ink-body: #453830; --ink-muted: #8a7a6c; --ink-faint: #bbab9c;
+    --line: rgba(36, 27, 21, 0.10); --line-strong: rgba(36, 27, 21, 0.18);
+    --a1-rgb: 142 76 46; --a1-ink-rgb: 112 58 34; --a2-rgb: 96 102 70; --a3-rgb: 162 122 60;
+}
+
+/* ---------- 8. 天青 · 青蓝 ---------- */
+[data-theme="sky"] {
+    --paper: #e9f0f4; --paper-raise: #f7fbfe; --paper-sunken: #dce6ee;
+    --paper-veil: rgba(247, 251, 254, 0.78); --grain: rgba(40, 80, 110, 0.045);
+    --ink: #16222b; --ink-body: #33434f; --ink-muted: #74858f; --ink-faint: #a6b4bd;
+    --line: rgba(22, 34, 43, 0.10); --line-strong: rgba(22, 34, 43, 0.18);
+    --a1-rgb: 40 104 132; --a1-ink-rgb: 26 78 102; --a2-rgb: 70 116 106; --a3-rgb: 150 126 74;
+}
+
+/* ---------- 9. 胭脂 · 绛红 ---------- */
+[data-theme="rouge"] {
+    --paper: #f7eeee; --paper-raise: #fefafa; --paper-sunken: #efe0e0;
+    --paper-veil: rgba(254, 250, 250, 0.78); --grain: rgba(140, 50, 60, 0.045);
+    --ink: #241818; --ink-body: #453334; --ink-muted: #8a7375; --ink-faint: #bba4a6;
+    --line: rgba(36, 24, 24, 0.10); --line-strong: rgba(36, 24, 24, 0.18);
+    --a1-rgb: 178 62 84; --a1-ink-rgb: 142 44 64; --a2-rgb: 100 106 132; --a3-rgb: 166 126 84;
+}
+
+/* ---------- 10. 竹影 · 竹青主调 ---------- */
+[data-theme="bamboo"] {
+    --paper: #edf2e6; --paper-raise: #f9fcf3; --paper-sunken: #e0e8d6;
+    --paper-veil: rgba(249, 252, 243, 0.78); --grain: rgba(70, 105, 50, 0.045);
+    --ink: #1a2115; --ink-body: #394431; --ink-muted: #7a8669; --ink-faint: #adb89b;
+    --line: rgba(26, 33, 21, 0.10); --line-strong: rgba(26, 33, 21, 0.18);
+    --a1-rgb: 88 122 52; --a1-ink-rgb: 66 96 38; --a2-rgb: 44 108 100; --a3-rgb: 158 126 60;
+}
+
+/* ===================================================================
+   主题预设（深色 10 种）
+   =================================================================== */
+
+/* ---------- 11. 墨夜（默认） ---------- */
+[data-theme="inknight"] {
+    --paper: #14131a; --paper-raise: #1d1c25; --paper-sunken: #100f16;
+    --paper-veil: rgba(29, 28, 37, 0.82); --grain: rgba(255, 240, 210, 0.035);
+    --ink: #f2ece0; --ink-body: #cec6b6; --ink-muted: #8e8778; --ink-faint: #625c50;
+    --line: rgba(242, 236, 224, 0.11); --line-strong: rgba(242, 236, 224, 0.20);
+    --a1-rgb: 224 112 95; --a1-ink-rgb: 240 139 123; --a2-rgb: 108 181 162; --a3-rgb: 213 174 105;
+}
+
+/* ---------- 12. 松烟 · 墨绿 ---------- */
+[data-theme="pineink"] {
+    --paper: #101614; --paper-raise: #1a221f; --paper-sunken: #0b100e;
+    --paper-veil: rgba(26, 34, 31, 0.82); --grain: rgba(200, 255, 230, 0.03);
+    --ink: #eaf2ee; --ink-body: #c2cec8; --ink-muted: #83908a; --ink-faint: #58635d;
+    --line: rgba(234, 242, 238, 0.11); --line-strong: rgba(234, 242, 238, 0.20);
+    --a1-rgb: 126 196 172; --a1-ink-rgb: 154 216 194; --a2-rgb: 200 178 118; --a3-rgb: 168 200 220;
+}
+
+/* ---------- 13. 藏蓝 · 靛 ---------- */
+[data-theme="midnight"] {
+    --paper: #0f1524; --paper-raise: #182134; --paper-sunken: #0a0f1b;
+    --paper-veil: rgba(24, 33, 52, 0.82); --grain: rgba(190, 215, 255, 0.03);
+    --ink: #e8eefb; --ink-body: #bfc9dd; --ink-muted: #7f8ba3; --ink-faint: #545e73;
+    --line: rgba(232, 238, 251, 0.12); --line-strong: rgba(232, 238, 251, 0.22);
+    --a1-rgb: 126 168 230; --a1-ink-rgb: 158 194 246; --a2-rgb: 122 200 190; --a3-rgb: 222 182 118;
+}
+
+/* ---------- 14. 绛紫 · 紫 ---------- */
+[data-theme="plum"] {
+    --paper: #17111b; --paper-raise: #221a29; --paper-sunken: #110c14;
+    --paper-veil: rgba(34, 26, 41, 0.82); --grain: rgba(240, 200, 255, 0.03);
+    --ink: #f4eaf6; --ink-body: #d0c1d6; --ink-muted: #91819b; --ink-faint: #63566c;
+    --line: rgba(244, 234, 246, 0.12); --line-strong: rgba(244, 234, 246, 0.22);
+    --a1-rgb: 214 130 200; --a1-ink-rgb: 232 160 220; --a2-rgb: 130 190 200; --a3-rgb: 222 178 122;
+}
+
+/* ---------- 15. 黛绿 · 碧 ---------- */
+[data-theme="jasper"] {
+    --paper: #0f1717; --paper-raise: #182322; --paper-sunken: #0a1010;
+    --paper-veil: rgba(24, 35, 34, 0.82); --grain: rgba(200, 255, 245, 0.03);
+    --ink: #e9f3f1; --ink-body: #c0cfcc; --ink-muted: #81908d; --ink-faint: #556460;
+    --line: rgba(233, 243, 241, 0.11); --line-strong: rgba(233, 243, 241, 0.21);
+    --a1-rgb: 104 192 158; --a1-ink-rgb: 134 214 182; --a2-rgb: 196 202 122; --a3-rgb: 220 182 122;
+}
+
+/* ---------- 16. 焦茶 · 栗 ---------- */
+[data-theme="ember"] {
+    --paper: #171310; --paper-raise: #211b16; --paper-sunken: #100d0a;
+    --paper-veil: rgba(33, 27, 22, 0.82); --grain: rgba(255, 225, 190, 0.035);
+    --ink: #f5ece2; --ink-body: #d3c4b4; --ink-muted: #94836f; --ink-faint: #64584a;
+    --line: rgba(245, 236, 226, 0.11); --line-strong: rgba(245, 236, 226, 0.21);
+    --a1-rgb: 224 142 92; --a1-ink-rgb: 240 168 122; --a2-rgb: 150 182 150; --a3-rgb: 214 174 112;
+}
+
+/* ---------- 17. 夜雨 · 灰蓝 ---------- */
+[data-theme="rainnight"] {
+    --paper: #101418; --paper-raise: #1a2026; --paper-sunken: #0b0e11;
+    --paper-veil: rgba(26, 32, 38, 0.82); --grain: rgba(200, 225, 255, 0.03);
+    --ink: #e9eef2; --ink-body: #c2cad0; --ink-muted: #828d95; --ink-faint: #566068;
+    --line: rgba(233, 238, 242, 0.11); --line-strong: rgba(233, 238, 242, 0.21);
+    --a1-rgb: 142 172 202; --a1-ink-rgb: 172 198 224; --a2-rgb: 122 192 182; --a3-rgb: 202 176 126;
+}
+
+/* ---------- 18. 玄墨 · 近中性 ---------- */
+[data-theme="obsidian"] {
+    --paper: #131313; --paper-raise: #1c1c1c; --paper-sunken: #0d0d0d;
+    --paper-veil: rgba(28, 28, 28, 0.84); --grain: rgba(255, 255, 255, 0.03);
+    --ink: #f1f0ec; --ink-body: #cbc9c3; --ink-muted: #8b8983; --ink-faint: #5e5c57;
+    --line: rgba(241, 240, 236, 0.11); --line-strong: rgba(241, 240, 236, 0.21);
+    --a1-rgb: 208 122 102; --a1-ink-rgb: 228 148 128; --a2-rgb: 152 176 160; --a3-rgb: 202 172 118;
+}
+
+/* ---------- 19. 苍青 · 青金 ---------- */
+[data-theme="patina"] {
+    --paper: #111619; --paper-raise: #1a2226; --paper-sunken: #0b0f11;
+    --paper-veil: rgba(26, 34, 38, 0.82); --grain: rgba(190, 240, 255, 0.03);
+    --ink: #e8f1f3; --ink-body: #bfcccf; --ink-muted: #7f8d91; --ink-faint: #546064;
+    --line: rgba(232, 241, 243, 0.11); --line-strong: rgba(232, 241, 243, 0.21);
+    --a1-rgb: 118 186 196; --a1-ink-rgb: 150 210 218; --a2-rgb: 200 176 120; --a3-rgb: 158 200 170;
+}
+
+/* ---------- 20. 绛雪 · 玫红 ---------- */
+[data-theme="rosewood"] {
+    --paper: #191114; --paper-raise: #241a1d; --paper-sunken: #120c0e;
+    --paper-veil: rgba(36, 26, 29, 0.82); --grain: rgba(255, 200, 215, 0.03);
+    --ink: #f7eaee; --ink-body: #d6c1c7; --ink-muted: #97828a; --ink-faint: #68565d;
+    --line: rgba(247, 234, 238, 0.11); --line-strong: rgba(247, 234, 238, 0.21);
+    --a1-rgb: 226 122 146; --a1-ink-rgb: 240 152 174; --a2-rgb: 174 178 134; --a3-rgb: 216 178 122;
+}
+
+/* 尺寸收紧（笔记本 / 小屏） */
+@media (max-width: 1280px) {
+    :root { --reader-w: 560px; }
+}
+
+@media (max-width: 1024px) {
+    :root { --rail-w: 224px; }
 }

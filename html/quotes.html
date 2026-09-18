@@ -1,14 +1,99 @@
-<div class="page-header">
-    <h2 class="page-title">精句集</h2>
-    <button id="refresh-quotes-btn" class="icon-button with-text" title="换一批">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
-        </svg>
-        <span>换一批</span>
+<!-- ===================================================================
+     MyPoems · 精句集 (quotes.html)
+     今日一句 · 案头收藏 · 横轴吸附卡组 · 分组精句墙
+     =================================================================== -->
+
+<header class="page-head">
+    <span class="seal page-head__seal" aria-hidden="true">句</span>
+    <div class="page-head__text">
+        <h2 class="page-title">精句集</h2>
+        <p class="page-subtitle">撷英 · 卡组随机漫步，精句墙按类翻检</p>
+    </div>
+    <div class="page-head__actions">
+        <button type="button" id="random-quote-btn" class="btn btn--secondary" title="随机抽一句">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17 3h4v4h-2V6.4l-3.3 3.3-1.4-1.4L17.6 5H17V3zM3 5V3h4v2H5.4l3.3 3.3-1.4 1.4L4 6.4V5H3zm14 16v-2h.6l-3.3-3.3 1.4-1.4L19 17.6V17h2v4h-4zM3 19v-2h2v.6l3.3-3.3 1.4 1.4L6.4 19H7v2H3v-2z"/></svg>
+            <span>随机一句</span>
+        </button>
+        <button type="button" id="refresh-quotes-btn" class="btn btn--secondary" title="打乱卡组顺序">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
+            </svg>
+            <span>打乱重排</span>
+        </button>
+    </div>
+</header>
+
+<!-- ============ 今日一句 ============ -->
+<section class="quote-hero" id="quote-hero" aria-label="今日一句">
+    <p class="quote-hero__label">
+        <span id="hero-label">今日一句</span>
+    </p>
+    <blockquote class="quote-hero__text" id="hero-text">正在研墨…</blockquote>
+    <div class="quote-hero__meta">
+        <span class="quote-hero__source" id="hero-source"></span>
+        <span class="quote-hero__facts" id="hero-facts"></span>
+    </div>
+    <div class="quote-hero__actions">
+        <button type="button" class="text-btn" id="hero-shuffle">换一句</button>
+        <button type="button" class="text-btn" id="hero-pin">钉到案头</button>
+        <button type="button" class="text-btn" id="hero-open">展读原作</button>
+    </div>
+</section>
+
+<!-- ============ 案头（收藏） ============ -->
+<section class="quote-desk" id="quote-desk" aria-label="案头收藏" hidden>
+    <div class="quote-desk__head">
+        <h3 class="section-title">案头</h3>
+        <span class="quote-desk__count" id="desk-count"></span>
+    </div>
+    <div class="quote-desk__list" id="desk-list"></div>
+</section>
+
+<!-- ============ 卡组 ============ -->
+<div class="quote-rail" id="quotes-rail">
+    <button type="button" class="quote-rail__nav quote-rail__nav--prev" id="quotes-prev" aria-label="上一句" data-tip="上一句" data-tip-pos="bottom">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.4 7.4 14 6l-6 6 6 6 1.4-1.4L10.8 12z"/></svg>
+    </button>
+
+    <div id="quotes-rail-track" class="quote-rail__track" tabindex="0" role="region"
+         aria-label="精句横轴，可用左右方向键翻动"></div>
+
+    <button type="button" class="quote-rail__nav quote-rail__nav--next" id="quotes-next" aria-label="下一句" data-tip="下一句" data-tip-pos="bottom">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.6 7.4 10 6l6 6-6 6-1.4-1.4L13.2 12z"/></svg>
     </button>
 </div>
 
-<!-- 瀑布流容器 -->
-<div id="quotes-masonry-container">
-    <!-- 精句卡片将由 JS 动态加载 -->
+<p class="quote-rail__hint">
+    <span>← →</span> 推移 · 点未居中者使其归中 · 点居中者展读原作
+</p>
+
+<div class="quote-rail__foot">
+    <div class="quote-rail__acts" role="group" aria-label="对当前居中的精句操作">
+        <span class="quote-rail__now" id="rail-now"></span>
+        <button type="button" class="btn btn--ghost btn--sm" id="rail-copy">复制</button>
+        <button type="button" class="btn btn--ghost btn--sm" id="rail-pin">钉到案头</button>
+        <button type="button" class="btn btn--ghost btn--sm" id="rail-open">展读</button>
+    </div>
+    <span class="quote-rail__count" id="quotes-counter"></span>
 </div>
+
+<!-- ============ 精句墙 ============ -->
+<section class="quote-wall" aria-labelledby="wall-title">
+    <div class="quote-wall__bar">
+        <h3 class="section-title" id="wall-title">精句墙</h3>
+        <p class="quote-wall__stats" id="wall-stats"></p>
+        <div class="segmented" id="wall-dimension" role="group" aria-label="分组方式">
+            <button type="button" data-dim="year" class="is-active">按年份</button>
+            <button type="button" data-dim="tag">按主题</button>
+            <button type="button" data-dim="genre">按词牌</button>
+        </div>
+    </div>
+
+    <div class="quote-wall__groups" id="wall-groups" role="group" aria-label="分组筛选"></div>
+
+    <div class="quote-wall__grid" id="wall-grid"></div>
+
+    <div class="quote-wall__foot">
+        <button type="button" class="btn btn--secondary" id="wall-more" hidden></button>
+    </div>
+</section>

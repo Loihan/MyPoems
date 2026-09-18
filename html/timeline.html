@@ -1,23 +1,39 @@
-<h2 class="page-title">编年史</h2>
+<!-- ===================================================================
+     MyPoems · 编年史 (timeline.html)
+     年表全景轴 + 逐年切片（同比 / 月度 / 沉默 / 新主题 / 意象联动）
+     =================================================================== -->
+
+<header class="page-head">
+    <span class="seal page-head__seal" aria-hidden="true">纪</span>
+    <div class="page-head__text">
+        <h2 class="page-title">编年史</h2>
+        <p class="page-subtitle">岁月留痕 · 点年卡展开当年篇目，点意象可跳转意象簿</p>
+    </div>
+</header>
+
+<!-- ============ 年表全景轴 ============ -->
+<section class="tl-overview" id="tl-overview" aria-label="年表总览">
+    <div class="tl-overview__head">
+        <div class="tl-overview__totals" id="tl-totals"></div>
+        <div class="tl-overview__span" id="tl-span"></div>
+    </div>
+    <div class="tl-spark" id="tl-spark" role="group" aria-label="逐年篇数，点击跳转对应年份"></div>
+</section>
 
 <div class="timeline-wrapper">
-    <!-- 【新增】年份快捷导航 -->
-    <div id="timeline-year-nav" class="timeline-year-nav">
-        <!-- 年份列表由 JS 生成 -->
-    </div>
+    <nav id="timeline-year-nav" class="timeline-year-nav" aria-label="年份快捷跳转"></nav>
 
-    <!-- 顶部装饰 -->
-    <div class="timeline-start-node">
-        <span>今</span>
-    </div>
+    <div class="timeline-column">
+        <div class="timeline-start-node">
+            <span>今</span>
+            <span class="timeline-node-label" id="tl-node-now"></span>
+        </div>
 
-    <!-- 时间轴容器 -->
-    <div id="timeline-container" class="main-timeline">
-        <!-- 动态加载 -->
-    </div>
+        <div id="timeline-container" class="main-timeline"></div>
 
-    <!-- 底部装饰 -->
-    <div class="timeline-end-node">
-        <span>始</span>
+        <div class="timeline-end-node">
+            <span>始</span>
+            <span class="timeline-node-label" id="tl-node-start"></span>
+        </div>
     </div>
 </div>

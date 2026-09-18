@@ -1,263 +1,521 @@
-/* === 核心布局 (三栏：左固定 - 中自适应 - 右动态) === */
-.container { 
-    display: flex; 
-    width: 100%;
-    min-height: 100vh;
-    align-items: flex-start;
-}
+/* ===================================================================
+   MyPoems · 布局层 (layout.css)
+   应用外壳：左侧书签栏 + 顶部条 + 内容台 + 右侧阅览抽屉
+   =================================================================== */
 
-/* 1. 左侧导航栏 */
-.sidebar {
-    width: var(--sidebar-width);
-    position: sticky; 
-    top: 0;
-    height: 100vh;
-    flex-shrink: 0;
-    padding: calc(var(--spacing-unit) * 4);
-    border-right: 1px solid var(--color-border);
-    overflow-y: auto;
-    z-index: 100;
-    background-color: var(--color-background);
-    
-    /* 关键：让内部元素可以用 Flex 撑开，把精句推到底部 */
+.app {
+    position: relative;
+    z-index: 1;
     display: flex;
-    flex-direction: column; 
-}
-
-/* 侧边栏头部 */
-.sidebar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: calc(var(--spacing-unit) * 5); padding-right: var(--spacing-unit); }
-.sidebar-header h1 { font-size: 1.5rem; letter-spacing: 2px; padding-left: var(--spacing-unit); margin: 0; }
-#theme-toggle-btn { border: none; padding: 8px; }
-
-/* 侧边栏导航 */
-.sidebar-nav { flex-grow: 1; /* 占据剩余空间，但不强迫 */ }
-.sidebar-nav ul { list-style: none; padding: 0; margin: 0; }
-.sidebar-nav li a { display: flex; align-items: center; gap: calc(var(--spacing-unit) * 2); color: var(--color-text-body); text-decoration: none; padding: calc(var(--spacing-unit) * 1.5) calc(var(--spacing-unit) * 2); border-radius: var(--border-radius); margin-bottom: var(--spacing-unit); transition: background-color var(--transition-main), color var(--transition-main); }
-.sidebar-nav li a svg { width: 20px; height: 20px; fill: var(--color-text-muted); transition: fill var(--transition-main); }
-.sidebar-nav li a:hover { background-color: #f4f4f5; color: var(--color-text-primary); }
-body.dark-theme .sidebar-nav li a:hover { background-color: #27272a; }
-.sidebar-nav li a:hover svg { fill: var(--color-text-primary); }
-.sidebar-nav li a.active { background-color: #eef2ff; color: var(--color-accent); font-weight: 600; }
-body.dark-theme .sidebar-nav li a.active { background-color: rgba(59, 130, 246, 0.1); }
-.sidebar-nav li a.active svg { fill: var(--color-accent); }
-
-/* 2. 中间内容区域 */
-.main-content {
-    flex-grow: 1;
-    width: 0;
-    min-width: 0;
-    padding: calc(var(--spacing-unit) * 6);
     min-height: 100vh;
-    transition: width 0.3s ease;
 }
 
-/* 3. 右侧阅读栏 */
-.reading-panel {
+/* =========================================================
+   一、左侧书签栏 (Rail)
+   ========================================================= */
+.rail {
+    --rail-current: var(--rail-w);
     position: sticky;
     top: 0;
+    flex: 0 0 var(--rail-current);
+    width: var(--rail-current);
     height: 100vh;
-    width: 0;
-    background-color: var(--color-background);
-    border-left: 1px solid var(--color-border);
-    overflow-y: auto;
-    flex-shrink: 0;
-    z-index: 90;
-    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
-    opacity: 0;
-    box-shadow: -5px 0 15px rgba(0,0,0,0.02);
-}
-.reading-panel.open {
-    width: var(--reading-panel-width);
-    opacity: 1;
-    z-index: 5000;
-    padding: calc(var(--spacing-unit) * 4);
-    border-left: 1px solid var(--color-border-light);
-}
-
-/* 面板内容 */
-.panel-header { display: flex; justify-content: flex-end; margin-bottom: var(--spacing-unit); }
-#close-panel-btn { border: none; padding: 8px; }
-.panel-poem-title { font-size: 2.2rem; margin: 0 0 16px 0; line-height: 1.3; text-align: center; }
-.panel-poem-meta { display: flex; justify-content: center; flex-wrap: wrap; gap: 15px; font-size: 0.9rem; color: var(--color-text-muted); padding-bottom: 24px; margin-bottom: 32px; border-bottom: 1px solid var(--color-border); }
-
-.panel-poem-body { font-size: 1.15rem; line-height: 2.2; margin: 0; padding: 0 10px; }
-.poem-body-center { text-align: center; }
-.poem-body-left { text-align: left; }
-.panel-section { 
-    margin-top: 0; 
-    padding-top: 0; 
-    border-top: none; 
-}
-.panel-preface {
-    margin-bottom: 32px;
-    padding-bottom: 24px;
-    border-bottom: 1px dashed var(--color-border-light);
-}
-.panel-body-container {
-    margin: 20px 0;
-}
-.panel-notes {
-    margin-top: 32px;
-    padding-top: 24px;
-    border-top: 1px dashed var(--color-border-light);
-}
-.panel-section h4 { 
-    font-family: var(--font-sans); 
-    font-size: 0.85rem; 
-    color: var(--color-text-muted); 
-    margin-bottom: 12px; 
-    opacity: 0.8; 
-}
-
-.panel-quotes-section { margin-top: 30px; padding-top: 15px; border-top: 1px solid var(--color-border); color: var(--color-text-muted); font-size: 0.85rem; }
-.panel-single-quote { display: list-item; list-style-type: disc; margin-left: 1.2em; margin-bottom: 4px; font-family: var(--font-serif); }
-
-/* 4. 每日精句 (侧边栏底部) - 【修复重点】 */
-.daily-quote-container {
-    margin-top: auto; /* 自动推到底部 */
-    padding: 24px 0;
-    border-top: 1px solid var(--color-border);
-    cursor: pointer;
-    transition: background-color 0.2s ease;
     display: flex;
     flex-direction: column;
-    align-items: center; 
-    gap: 16px;
-    width: 100%;
+    gap: var(--space-4);
+    padding: var(--space-5) var(--space-4) var(--space-4);
+    background: linear-gradient(180deg, var(--paper-raise), var(--paper));
+    border-right: 1px solid var(--line);
+    overflow: hidden auto;
+    transition: flex-basis var(--dur) var(--ease), width var(--dur) var(--ease), transform var(--dur) var(--ease);
 }
 
-.daily-quote-container:hover {
-    background-color: rgba(0,0,0,0.02);
+body.rail-collapsed .rail { --rail-current: var(--rail-w-mini); }
+
+/* --- 品牌区 --- */
+.rail__brand {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-1) var(--space-2) var(--space-4);
+    border-bottom: 1px solid var(--line);
 }
-body.dark-theme .daily-quote-container:hover {
-    background-color: rgba(255,255,255,0.05);
+
+.rail__brand-text { min-width: 0; }
+
+.rail__brand-title {
+    display: block;
+    font-family: var(--font-serif);
+    font-size: 1.24rem;
+    font-weight: 700;
+    letter-spacing: 0.24em;
+    color: var(--ink);
+    white-space: nowrap;
+}
+
+.rail__brand-sub {
+    display: block;
+    margin-top: 2px;
+    font-size: 0.66rem;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    white-space: nowrap;
+}
+
+/* --- 导航 --- */
+.rail__nav { flex: 1 1 auto; min-height: 0; overflow-y: auto; overflow-x: hidden; }
+
+.rail-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.rail-nav__label {
+    padding: var(--space-4) var(--space-3) var(--space-2);
+    font-size: 0.64rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    white-space: nowrap;
+}
+
+.rail-nav a {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: 10px var(--space-3);
+    border-radius: var(--r-sm);
+    color: var(--ink-body);
+    font-size: 0.92rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+    transition: background-color var(--dur-fast) var(--ease),
+                color var(--dur-fast) var(--ease),
+                transform var(--dur-fast) var(--ease);
+}
+
+.rail-nav a svg {
+    flex: 0 0 auto;
+    width: 19px;
+    height: 19px;
+    fill: var(--ink-muted);
+    transition: fill var(--dur-fast) var(--ease), transform var(--dur) var(--ease-spring);
+}
+
+/* 朱砂指示条 */
+.rail-nav a::before {
+    content: "";
+    position: absolute;
+    left: -8px;
+    top: 50%;
+    width: 3px;
+    height: 0;
+    border-radius: var(--r-pill);
+    background: var(--cinnabar);
+    transform: translateY(-50%);
+    transition: height var(--dur) var(--ease-spring);
+}
+
+.rail-nav a:hover {
+    background: var(--paper-sunken);
+    color: var(--ink);
+}
+
+.rail-nav a:hover svg { fill: var(--ink-body); transform: scale(1.08); }
+
+.rail-nav a.active,
+.rail-nav a[aria-current="page"] {
+    background: var(--cinnabar-soft);
+    color: var(--cinnabar-ink);
+    font-weight: 600;
+}
+
+.rail-nav a.active::before,
+.rail-nav a[aria-current="page"]::before { height: 20px; }
+
+.rail-nav a.active svg,
+.rail-nav a[aria-current="page"] svg { fill: var(--cinnabar); }
+
+/* --- 每日精句（竖排笺） --- */
+.rail__quote {
+    position: relative;
+    margin: 0 var(--space-2);
+    padding: var(--space-4) 0;
+    border-top: 1px solid var(--line);
+    cursor: pointer;
+    text-align: center;
+    transition: background-color var(--dur) var(--ease);
+    border-radius: var(--r-sm);
+}
+
+.rail__quote[hidden] { display: none; }
+
+.rail__quote:hover { background: var(--paper-sunken); }
+
+.rail__quote::before {
+    content: "今 日";
+    display: block;
+    margin-bottom: var(--space-3);
+    font-family: var(--font-serif);
+    font-size: 0.66rem;
+    letter-spacing: 0.4em;
+    color: var(--ink-faint);
 }
 
 .daily-quote-content {
-    /* 竖排文字核心 */
-    writing-mode: vertical-rl; 
+    writing-mode: vertical-rl;
     text-orientation: mixed;
-    
+    display: inline-block;
+    max-height: 168px;
+    overflow: hidden;
     font-family: var(--font-serif);
-    font-size: 1rem;
-    line-height: 1.8;
-    color: var(--color-text-body); 
-    opacity: 0.8; 
-    max-height: 200px; 
-    letter-spacing: 2px;
+    font-size: 0.95rem;
+    line-height: 1.9;
+    letter-spacing: 0.14em;
+    color: var(--ink-body);
 }
 
 .daily-quote-author {
     writing-mode: vertical-rl;
-    text-orientation: mixed;
-    font-family: var(--font-sans);
-    font-size: 0.8rem;
-    color: var(--color-text-muted);
-    opacity: 0.6;
+    display: inline-block;
+    vertical-align: bottom;
+    margin-right: var(--space-3);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    color: var(--ink-muted);
 }
 
 .daily-quote-author::before {
-    content: '—'; /* 破折号 */
+    content: "——";
     display: block;
-    margin-bottom: 8px;
-    color: var(--color-accent);
+    margin-bottom: var(--space-2);
+    color: var(--cinnabar);
 }
 
-/* 响应式 */
-@media (max-width: 1100px) {
-    .reading-panel.open { position: fixed; right: 0; width: 100%; max-width: 500px; box-shadow: -5px 0 20px rgba(0,0,0,0.1); }
+/* --- 底部工具 --- */
+.rail__foot {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--line);
 }
+
+.rail__foot .icon-btn { flex: 0 0 auto; }
+
+/* --- 折叠态 --- */
+body.rail-collapsed .rail__brand-text,
+body.rail-collapsed .rail-nav__label,
+body.rail-collapsed .rail-nav a span,
+body.rail-collapsed .rail__quote { display: none; }
+
+body.rail-collapsed .rail__brand { justify-content: center; padding-inline: 0; }
+body.rail-collapsed .rail-nav a { justify-content: center; padding-inline: 0; }
+body.rail-collapsed .rail__foot { flex-direction: column; }
 
 /* =========================================================
-   【核心修复】移动端自适应 (手机端专项优化)
+   二、内容台 (Stage)
+   ========================================================= */
+.stage {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.topbar {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    min-height: var(--topbar-h);
+    padding: var(--space-3) clamp(var(--space-4), 3vw, var(--space-7));
+    background: var(--paper-veil);
+    backdrop-filter: blur(14px) saturate(1.2);
+    -webkit-backdrop-filter: blur(14px) saturate(1.2);
+    border-bottom: 1px solid var(--line);
+}
+
+.topbar__title {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-3);
+    min-width: 0;
+}
+
+.topbar__title h1,
+.topbar__title .topbar-page {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    color: var(--ink);
+    white-space: nowrap;
+}
+
+.topbar__hint {
+    font-size: 0.74rem;
+    letter-spacing: 0.14em;
+    color: var(--ink-faint);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.topbar__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-left: auto;
+}
+
+.content {
+    --content-pad: clamp(var(--space-4), 3vw, var(--space-7));
+    flex: 1 1 auto;
+    width: 100%;
+    max-width: var(--stage-max);
+    margin-inline: auto;
+    padding: clamp(var(--space-5), 3.4vw, var(--space-7)) var(--content-pad) var(--space-8);
+}
+
+/* 页面标题块 */
+.page-head {
+    display: flex;
+    align-items: flex-end;
+    gap: var(--space-4);
+    margin-bottom: var(--space-6);
+    padding-bottom: var(--space-4);
+    border-bottom: 1px solid var(--line);
+}
+
+.page-head__seal { flex: 0 0 auto; }
+
+.page-head__text { flex: 1 1 0; min-width: 0; }
+
+.page-title {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: clamp(1.5rem, 1.15rem + 1.4vw, 2.05rem);
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    color: var(--ink);
+}
+
+.page-subtitle {
+    margin: var(--space-2) 0 0;
+    font-size: 0.82rem;
+    letter-spacing: 0.12em;
+    color: var(--ink-muted);
+}
+
+.page-head__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-left: auto;
+    padding-bottom: 2px;
+}
+
+/* 兼容旧结构：只有 h2.page-title 的页面 */
+.page-title:first-child { margin-bottom: var(--space-5); }
+
+/* =========================================================
+   三、右侧阅览抽屉 (Reader)
+   ========================================================= */
+.reader {
+    position: fixed;
+    top: 0;
+    right: 0;
+    z-index: 120;
+    display: flex;
+    flex-direction: column;
+    width: min(var(--reader-w), 100vw);
+    height: 100vh;
+    background: var(--paper-raise);
+    background-image: var(--texture-paper);
+    border-left: 1px solid var(--line);
+    box-shadow: var(--shadow-4);
+    transform: translateX(102%);
+    visibility: hidden;
+    transition: transform var(--dur-slow) var(--ease-out), visibility var(--dur-slow);
+}
+
+.reader.open {
+    transform: translateX(0);
+    visibility: visible;
+}
+
+/* ---------- 阅读模式二：浮层模态（居中悬浮，虚化背景，读完再合上） ---------- */
+body[data-reader="modal"] .reader {
+    top: 50%;
+    left: 50%;
+    right: auto;
+    bottom: auto;
+    width: min(var(--reader-w), calc(100vw - var(--space-8)));
+    height: min(88vh, 900px);
+    border: 1px solid var(--line);
+    border-radius: var(--r-lg);
+    overflow: hidden;
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.965);
+    transition: transform var(--dur) var(--ease-spring),
+                opacity var(--dur) var(--ease),
+                visibility var(--dur);
+}
+
+body[data-reader="modal"] .reader.open {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+@media (max-width: 640px) {
+    body[data-reader="modal"] .reader {
+        width: 100vw;
+        height: 100vh;
+        border: 0;
+        border-radius: 0;
+    }
+}
+
+/* ---------- 阅读模式一：右侧推出（挤压界面，其余部分仍可使用） ----------
+   仅在够宽的屏幕上成立；窄屏自动退化为浮层（见下方媒体查询） */
+@media (min-width: 1025px) {
+    body[data-reader="push"] .reader {
+        position: sticky;
+        top: 0;
+        right: auto;
+        align-self: flex-start;
+        flex: 0 0 0;
+        width: 0;
+        min-width: 0;
+        overflow: hidden;
+        transform: none;
+        visibility: visible;
+        border-left-width: 0;
+        box-shadow: none;
+        transition: flex-basis var(--dur) var(--ease),
+                    width var(--dur) var(--ease),
+                    border-left-width var(--dur) var(--ease),
+                    box-shadow var(--dur) var(--ease);
+    }
+
+    body[data-reader="push"] .reader.open {
+        flex-basis: clamp(360px, 38vw, var(--reader-w));
+        width: clamp(360px, 38vw, var(--reader-w));
+        border-left-width: 1px;
+        box-shadow: var(--shadow-3);
+    }
+
+    /* 推出模式：不虚化背景、不锁滚动，左侧可照常操作 */
+    body[data-reader="push"] .scrim--reader { display: none; }
+    body[data-reader="push"].reader-open { overflow: auto; }
+}
+
+.reader__head {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-4);
+    border-bottom: 1px solid var(--line);
+    background: var(--paper-veil);
+    backdrop-filter: blur(10px);
+}
+
+.reader__head-label {
+    font-family: var(--font-serif);
+    font-size: 0.78rem;
+    letter-spacing: 0.34em;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+}
+
+.reader__head .spacer { flex: 1; }
+
+.reader__body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
+    padding: clamp(var(--space-5), 3vw, var(--space-6)) clamp(var(--space-5), 3.4vw, var(--space-7)) var(--space-8);
+}
+
+/* 遮罩 */
+.scrim {
+    position: fixed;
+    inset: 0;
+    z-index: 110;
+    background: rgba(28, 20, 10, 0.36);
+    backdrop-filter: blur(2px);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity var(--dur) var(--ease), visibility var(--dur);
+}
+
+.scrim.show { opacity: 1; visibility: visible; }
+
+.scrim--rail { z-index: 100; }
+
+/* 移动端汉堡按钮（桌面隐藏；需提高优先级，因为 components.css 在 layout.css 之后） */
+.topbar .rail-toggle { display: none; }
+
+/* =========================================================
+   四、响应式
    ========================================================= */
 
-/* 当屏幕宽度小于等于 768px 时 (绝大多数手机屏幕) */
-@media (max-width: 768px) {
-    /* 1. 整体容器堆叠 */
-    .container {
-        flex-direction: column;
-    }
+/* 中屏：默认折叠书签栏 */
+@media (max-width: 1180px) {
+    body:not(.rail-expanded) .rail { --rail-current: var(--rail-w-mini); }
+    body:not(.rail-expanded) .rail__brand-text,
+    body:not(.rail-expanded) .rail-nav__label,
+    body:not(.rail-expanded) .rail-nav a span,
+    body:not(.rail-expanded) .rail__quote { display: none; }
+    body:not(.rail-expanded) .rail__brand { justify-content: center; padding-inline: 0; }
+    body:not(.rail-expanded) .rail-nav a { justify-content: center; padding-inline: 0; }
+    body:not(.rail-expanded) .rail__foot { flex-direction: column; }
+}
 
-    /* 2. 左侧栏转化为底部导航栏 */
-    .sidebar {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        top: auto; /* 取消顶部固定 */
-        height: 60px; /* 固定高度的底部导航 */
-        width: 100% !important;
-        border-right: none;
-        border-top: 1px solid var(--color-border);
-        padding: 5px 10px;
-        display: flex;
-        flex-direction: row; /* 横向排列 */
-        justify-content: space-around;
-        align-items: center;
-        z-index: 1000; /* 确保在最顶层 */
-    }
-
-    /* 隐藏底部导航里不需要的元素 */
-    .sidebar-header, 
-    .daily-quote-container {
-        display: none !important;
-    }
-
-    /* 导航列表横向平铺 */
-    .sidebar-nav {
-        width: 100%;
-        margin: 0;
-    }
-    
-    .sidebar-nav ul {
-        display: flex;
-        justify-content: space-around;
-        width: 100%;
-    }
-
-    .sidebar-nav li {
-        margin: 0;
-    }
-
-    /* 导航按钮变为上下结构(图标在上，文字在下) */
-    .sidebar-nav li a {
-        flex-direction: column;
-        gap: 2px;
-        font-size: 0.7rem;
-        padding: 4px;
-        margin: 0;
-        background: transparent !important; /* 移动端取消背景色激活状态，用文字颜色区分 */
-    }
-
-    .sidebar-nav li a svg {
-        width: 20px;
-        height: 20px;
-    }
-
-    /* 3. 中间主内容区域铺满 */
-    .main-content {
-        margin-left: 0;
-        width: 100%;
-        padding: calc(var(--spacing-unit) * 3); /* 缩小手机端内边距 */
-        padding-bottom: 100px; /* 留出底部导航栏的空间，防止内容被遮挡 */
-    }
-
-    /* 4. 右侧阅读栏变为全屏覆盖模式 */
-    .reading-panel.open {
+/* 小屏：书签栏 → 抽屉 */
+@media (max-width: 900px) {
+    .rail {
         position: fixed;
         top: 0;
         left: 0;
-        width: 100% !important;
-        height: 100% !important;
-        max-width: 100% !important;
-        z-index: 5000; /* 层级高于底部导航 */
-        border-left: none;
-        box-shadow: none;
-        padding: calc(var(--spacing-unit) * 3) !important;
+        z-index: 105;
+        width: min(300px, 84vw);
+        flex-basis: auto;
+        transform: translateX(-104%);
+        box-shadow: var(--shadow-4);
     }
 
-    /* 5. 编年史年份导航自动隐藏 */
-    .timeline-year-nav {
-        display: none !important;
-    }
+    body.rail-open .rail { transform: translateX(0); }
+
+    /* 抽屉内始终显示完整标签 */
+    .rail__brand-text,
+    .rail-nav__label,
+    .rail-nav a span { display: block !important; }
+    .rail__brand { justify-content: flex-start !important; padding-inline: var(--space-2) !important; }
+    .rail-nav a { justify-content: flex-start !important; padding-inline: var(--space-3) !important; }
+    .rail__foot { flex-direction: row !important; }
+    .rail__quote { display: block !important; }
+
+    .topbar .rail-toggle { display: inline-grid; }
+
+    .topbar { padding-inline: var(--space-4); }
+    .topbar__hint { display: none; }
+
+    .content { --content-pad: var(--space-4); padding-inline: var(--content-pad); }
+}
+
+@media (max-width: 640px) {
+    .reader { width: 100vw; border-left: none; }
+    .page-head { flex-wrap: wrap; align-items: flex-start; }
+    .page-head__actions { margin-left: 0; width: 100%; }
+    .content { padding-bottom: var(--space-7); }
+    body { font-size: 14.5px; }
 }

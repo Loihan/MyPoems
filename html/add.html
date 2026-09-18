@@ -1,81 +1,122 @@
-<h2 class="page-title">添加新篇</h2>
-<form id="add-poem-form" class="poem-editor-layout">
-    <div class="main-content-column">
-        <div class="form-group">
-            <label for="poem-content">内容:</label>
-            <textarea id="poem-content" name="content" placeholder="在此处挥毫泼墨..." required></textarea>
-        </div>
+<!-- ===================================================================
+     MyPoems · 添加新篇 (add.html)
+     左：正文稿纸　右：题签栏　底：常驻操作条
+     =================================================================== -->
+
+<header class="page-head">
+    <span class="seal page-head__seal" aria-hidden="true">墨</span>
+    <div class="page-head__text">
+        <h2 class="page-title">添加新篇</h2>
+        <p class="page-subtitle">研墨落笔 · 正文直接换行分段，序言与注释可留白</p>
     </div>
-    <div class="metadata-sidebar-column">
-        <div class="form-group">
-            <label for="poem-title">标题:</label>
-            <input type="text" id="poem-title" name="title" required>
+    <div class="page-head__actions">
+        <span class="draft-chip" id="draft-chip" data-state="idle">
+            <i aria-hidden="true"></i><span id="draft-text">尚无草稿</span>
+        </span>
+    </div>
+</header>
+
+<form id="add-poem-form" class="add-form">
+    <div class="poem-editor-layout">
+    <!-- ============ 左：正文 ============ -->
+    <section class="editor-pane">
+        <div class="editor-pane__bar">
+            <label class="editor-pane__label" for="poem-content">正文</label>
+            <span class="editor-pane__stats" id="editor-stats">0 字 · 0 行</span>
+            <button type="button" class="text-btn" id="btn-clear-draft" hidden>清空草稿</button>
         </div>
-        <div class="form-group">
-            <label for="poem-creationDate">创作时间:</label>
-            <input type="date" id="poem-creationDate" name="creationDate" required>
-        </div>
-        <div class="form-row">
+        <textarea id="poem-content" name="content" class="poem-paper" required spellcheck="false"
+                  placeholder="在此处挥毫泼墨…&#10;（直接回车分段，每段会按排版自动缩进）"></textarea>
+    </section>
+
+    <!-- ============ 右：题签 ============ -->
+    <aside class="side-pane">
+        <section class="side-card">
+            <h3 class="side-card__title">题名</h3>
+
             <div class="form-group">
-                <label for="poem-type">作品类型:</label>
-                <select id="poem-type" name="type">
-                    <option value="诗">诗</option>
-                    <option value="词">词</option>
-                    <option value="文言文">文言文</option>
-                    <option value="现代文">现代文</option>
-                    <option value="随笔">随笔</option>
-                </select>
+                <label for="poem-title">标题</label>
+                <input type="text" id="poem-title" name="title" required autocomplete="off" placeholder="如：临江仙·近中秋">
             </div>
-            <div class="form-group" id="poem-genre-group">
-                <label for="poem-genre" id="poem-genre-label">体裁:</label>
-                <select id="poem-genre" name="genre">
-                    <option value="五言">五言</option>
-                    <option value="七言">七言</option>
-                </select>
-            </div>
-        </div>
-        <div class="form-group">
-            <label for="poem-preface">序言 (可选):</label>
-            <textarea id="poem-preface" name="preface" rows="4"></textarea>
-        </div>
-        <div class="form-group">
-            <label for="poem-notes">注释 (可选):</label>
-            <textarea id="poem-notes" name="notes" rows="4"></textarea>
-        </div>
 
-        <div class="form-group">
-            <label>精句摘录 (可选):</label>
+            <div class="form-group">
+                <label for="poem-creationDate">创作时间</label>
+                <input type="date" id="poem-creationDate" name="creationDate" required>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="poem-type">作品类型</label>
+                    <select id="poem-type" name="type">
+                        <option value="诗">诗</option>
+                        <option value="词">词</option>
+                        <option value="文言文">文言文</option>
+                        <option value="现代文">现代文</option>
+                        <option value="随笔">随笔</option>
+                    </select>
+                </div>
+                <div class="form-group" id="poem-genre-group">
+                    <label for="poem-genre" id="poem-genre-label">体裁</label>
+                    <select id="poem-genre" name="genre">
+                        <option value="五言">五言</option>
+                        <option value="七言">七言</option>
+                    </select>
+                </div>
+            </div>
+        </section>
+
+        <section class="side-card">
+            <h3 class="side-card__title">题解 <span class="side-card__note">可选</span></h3>
+
+            <div class="form-group">
+                <label for="poem-preface">序言</label>
+                <textarea id="poem-preface" name="preface" rows="3" placeholder="写作缘起、时间地点…"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="poem-notes">注释</label>
+                <textarea id="poem-notes" name="notes" rows="3" placeholder="典故、字词解释…"></textarea>
+            </div>
+        </section>
+
+        <section class="side-card">
+            <h3 class="side-card__title">摘句 <span class="side-card__note">可选 · 会进入精句集</span></h3>
+
             <div class="quote-input-wrapper">
-                <input type="text" id="add-quote-input" placeholder="输入一句诗词后回车或点击添加...">
-                <button type="button" id="btn-add-quote" class="secondary" style="padding: 0 15px;">添加</button>
+                <input type="text" id="add-quote-input" placeholder="输入一句诗词后回车…" autocomplete="off">
+                <button type="button" id="btn-add-quote" class="btn btn--secondary">添加</button>
             </div>
-            <ul id="add-quote-list" class="quote-list">
-                <!-- 动态生成的精句列表 -->
-            </ul>
-        </div>
+            <ul id="add-quote-list" class="quote-list"></ul>
+        </section>
 
-        <div class="form-group">
-            <label>标签:</label>
+        <section class="side-card">
+            <h3 class="side-card__title">签条 <span class="side-card__note">可选 · 用于索引管理</span></h3>
+
             <div id="add-tag-input-component" class="tag-input-container">
-                <ul class="tag-list">
-                    <!-- 已选标签会显示在这里 -->
-                </ul>
-                <input type="text" class="tag-input" placeholder="输入创建新标签，或点击下方标签...">
+                <ul class="tag-list"></ul>
+                <input type="text" class="tag-input" placeholder="新建标签，回车确认…" autocomplete="off" aria-label="添加标签">
             </div>
             <ul class="tag-suggestions"></ul>
             <input type="hidden" id="poem-tags" name="tags">
-            
-            <!-- 【新增】标签云区域 -->
+
             <div class="tag-cloud-wrapper">
-                <span class="tag-cloud-label">点击添加已有标签:</span>
-                <div id="add-tag-cloud" class="tag-cloud">
-                    <!-- 标签云将由 JS 加载 -->
-                </div>
+                <span class="tag-cloud-label">点击添加已有标签</span>
+                <div id="add-tag-cloud" class="tag-cloud"></div>
             </div>
-        </div>
-        
-        <div class="form-actions">
-            <button type="submit" class="primary">保存作品</button>
+        </section>
+    </aside>
+    </div>
+
+    <!-- ============ 底：常驻操作条 ============ -->
+    <div class="editor-bar">
+        <span class="editor-bar__hint">
+            <kbd>Ctrl</kbd> + <kbd>S</kbd> 保存 · 草稿自动留存，切页回来可续写
+        </span>
+        <div class="editor-bar__actions">
+            <button type="submit" class="btn btn--primary">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>
+                保存作品
+            </button>
         </div>
     </div>
 </form>

@@ -7,6 +7,12 @@
 (function() {
     let allPoems = [];
     let tagStats = [];
+
+    function esc(value) {
+        return String(value == null ? '' : value)
+            .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
     
     // 状态管理
     let selectedTags = new Set(); // 左侧选中的标签
@@ -80,9 +86,9 @@
             const key = t.isNoTag ? NO_TAG_KEY : t.name;
             const isActive = selectedTags.has(key);
             return `
-            <div class="tag-list-item ${isActive ? 'active' : ''}" data-key="${key}">
-                <span class="tag-name" style="${t.isNoTag ? 'color:var(--color-text-muted);font-style:italic;' : ''}">
-                    ${t.name}
+            <div class="tag-list-item ${isActive ? 'active' : ''}" data-key="${esc(key)}" role="button" tabindex="0">
+                <span class="tag-name"${t.isNoTag ? ' style="color:var(--ink-muted);font-style:italic;"' : ''}>
+                    ${esc(t.name)}
                 </span>
                 <span class="tag-badge">${t.count}</span>
             </div>
@@ -131,32 +137,32 @@
         viewCount.textContent = filteredPoems.length;
 
         if (filteredPoems.length === 0) {
-            poemListEl.innerHTML = `<div class="empty-state" style="padding:40px;">没有匹配作品</div>`;
+            poemListEl.innerHTML = `<div class="empty-state"><div class="empty-state__glyph">无</div><h3>没有匹配作品</h3><p>换一个标签，或为作品补上签条。</p></div>`;
         } else {
             poemListEl.innerHTML = filteredPoems.map(poem => {
-                // 生成标签 HTML (带删除按钮)
                 let tagsHtml = '';
                 if (poem.tags && poem.tags.length > 0) {
-                    tagsHtml = `<div class="poem-inline-tags">` + 
-                        poem.tags.map(t => 
-                            `<span class="inline-tag">
-                                ${t}
-                                <span class="remove-tag-btn" onclick="event.stopPropagation(); window.removeTagFromPoem('${poem.filename}', '${t}')">&times;</span>
+                    tagsHtml = `<div class="poem-inline-tags">` +
+                        poem.tags.map(t =>
+                            `<span class="inline-tag" data-tag="${esc(t)}">
+                                ${esc(t)}
+                                <span class="remove-tag-btn" data-action="untag" role="button" aria-label="移除标签" title="移除标签">&times;</span>
                             </span>`
-                        ).join('') + 
+                        ).join('') +
                     `</div>`;
                 }
 
                 return `
-                <div class="related-poem-item" data-filename="${poem.filename}" onclick="window.togglePoemSelection('${poem.filename}')">
+                <div class="related-poem-item ${selectedPoems.has(poem.filename) ? 'selected' : ''}"
+                     data-filename="${esc(poem.filename)}" role="button" tabindex="0">
                     <div class="poem-item-left">
-                        <input type="checkbox" class="poem-checkbox" ${selectedPoems.has(poem.filename) ? 'checked' : ''}>
+                        <input type="checkbox" class="poem-checkbox" tabindex="-1" ${selectedPoems.has(poem.filename) ? 'checked' : ''} aria-label="选择此作品">
                         <div class="poem-info">
-                            <span class="related-poem-title" onclick="event.stopPropagation(); window.App.openPoemByFilename('${poem.filename}')">${poem.title || '无题'}</span>
+                            <span class="related-poem-title" data-action="open">${esc(poem.title || '无题')}</span>
                             ${tagsHtml}
                         </div>
                     </div>
-                    <span class="related-poem-date">${poem.creationDate || ''}</span>
+                    <span class="related-poem-date">${esc(poem.creationDate || '')}</span>
                 </div>
             `;}).join('');
         }
@@ -233,8 +239,17 @@
 
     // --- 单个删除逻辑 (暴露给全局) ---
     window.removeTagFromPoem = async function(filename, tag) {
-        if (!confirm(`确定从该作品中移除标签 "${tag}" 吗？`)) return;
-        
+        const poem = allPoems.find(p => p.filename === filename) || {};
+        const ok = await window.App.confirm({
+            tone: 'danger',
+            title: '移除标签',
+            message: '只从这一篇作品上取下这个签条，标签本身仍会保留。',
+            detail: `「${tag}」 · 《${poem.title || '无题'}》`,
+            confirmText: '移除',
+            cancelText: '取消'
+        });
+        if (!ok) return;
+
         try {
             const res = await fetch('/api/tags/remove-one', {
                 method: 'POST',
@@ -256,15 +271,57 @@
     async function handleRename() {
         if (selectedTags.size !== 1) return;
         const currentTag = Array.from(selectedTags)[0];
-        const newName = prompt(`请输入"${currentTag}"的新名称：`, currentTag);
-        if (newName && newName.trim() !== '' && newName !== currentTag) {
-            await executeBatchUpdate(currentTag, newName.trim());
+
+        if (currentTag === NO_TAG_KEY) {
+            await window.App.confirm({
+                tone: 'info',
+                title: '这是一组「未贴签」的作品',
+                message: '「无标签」只是尚未贴签的作品集合，不是真正的标签，因此不能重命名。先给它们贴上具体签条即可。',
+                singleAction: true,
+                confirmText: '知道了'
+            });
+            return;
+        }
+
+        const newName = await window.App.prompt({
+            tone: 'info',
+            title: '重命名 / 合并标签',
+            message: '若已存在同名标签，两者会自动合并。',
+            detail: `当前：${currentTag}`,
+            input: { value: currentTag, placeholder: '输入新的标签名' },
+            confirmText: '重命名',
+            cancelText: '取消'
+        });
+        if (newName && newName !== currentTag) {
+            await executeBatchUpdate(currentTag, newName);
         }
     }
 
     async function handleDelete() {
+        if (selectedTags.size !== 1) return;
         const currentTag = Array.from(selectedTags)[0];
-        if (confirm(`确定移除标签 "${currentTag}" 吗？`)) {
+
+        if (currentTag === NO_TAG_KEY) {
+            await window.App.confirm({
+                tone: 'info',
+                title: '无法删除「无标签」',
+                message: '它不是真正的标签，只是「尚未贴签」的作品集合，无需也无法删除。',
+                singleAction: true,
+                confirmText: '知道了'
+            });
+            return;
+        }
+
+        const count = (tagStats.find(t => t.name === currentTag) || {}).count || 0;
+        const ok = await window.App.confirm({
+            tone: 'danger',
+            title: '删除标签',
+            message: `将从${count ? '这 ' + count + ' 篇' : '所有'}作品上移除该签条，作品本身不受影响。`,
+            detail: `「${currentTag}」`,
+            confirmText: '删除',
+            cancelText: '取消'
+        });
+        if (ok) {
             await executeBatchUpdate(currentTag, null);
         }
     }
@@ -291,10 +348,45 @@
 
     function addEventListeners() {
         searchInput.addEventListener('input', renderTagList);
+
         listContainer.addEventListener('click', (e) => {
             const item = e.target.closest('.tag-list-item');
             if (item) toggleTagSelection(item.dataset.key);
         });
+
+        listContainer.addEventListener('keydown', (e) => {
+            if (e.key !== 'Enter' && e.key !== ' ') return;
+            const item = e.target.closest('.tag-list-item');
+            if (item) { e.preventDefault(); toggleTagSelection(item.dataset.key); }
+        });
+
+        /* 关联作品：事件委托（避免 innerHTML 内联 onclick 的转义问题） */
+        poemListEl.addEventListener('click', (e) => {
+            const item = e.target.closest('.related-poem-item');
+            if (!item) return;
+            const filename = item.dataset.filename;
+
+            const untagBtn = e.target.closest('[data-action="untag"]');
+            if (untagBtn) {
+                const tagEl = untagBtn.closest('.inline-tag');
+                if (tagEl) window.removeTagFromPoem(filename, tagEl.dataset.tag);
+                return;
+            }
+
+            if (e.target.closest('[data-action="open"]')) {
+                if (window.App && window.App.openPoemByFilename) window.App.openPoemByFilename(filename);
+                return;
+            }
+
+            window.togglePoemSelection(filename);
+        });
+
+        poemListEl.addEventListener('keydown', (e) => {
+            if (e.key !== 'Enter' && e.key !== ' ') return;
+            const item = e.target.closest('.related-poem-item');
+            if (item) { e.preventDefault(); window.togglePoemSelection(item.dataset.filename); }
+        });
+
         btnRename.addEventListener('click', handleRename);
         btnDelete.addEventListener('click', handleDelete);
     }

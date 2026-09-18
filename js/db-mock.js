@@ -30,6 +30,7 @@
     const ROOT = 'MyPoems';          // Documents 下的根目录名
     const POEMS_DIR = ROOT + '/poems';
     const IGNORE_FILE = ROOT + '/ignore_words.json';
+    const FAVORITES_FILE = ROOT + '/favorites.json';
 
     /* ------------------------------------------------------------
      * 底层：调用 Capacitor Filesystem 原生插件
@@ -159,6 +160,9 @@
         poemData.tags = processTags(poemData.tags);
         const filename = sanitizeFilename(poemData.title);
         await ensureDirs();
+        if (await fileExists(POEMS_DIR + '/' + filename)) {
+            return text('已存在同名作品，请修改标题', 409);
+        }
         await writePoem(filename, poemData);
         return json({ message: '创建成功', filename }, 201);
     }
@@ -169,7 +173,14 @@
         if (!(await fileExists(POEMS_DIR + '/' + filename))) {
             return text('文件不存在', 404);
         }
-        await writePoem(filename, updatedData);
+        const newFilename = updatedData.title ? sanitizeFilename(updatedData.title) : filename;
+        if (newFilename !== filename && await fileExists(POEMS_DIR + '/' + newFilename)) {
+            return text('已存在同名作品，请修改标题', 409);
+        }
+        await writePoem(newFilename, updatedData);
+        if (newFilename !== filename) {
+            await removeFile(POEMS_DIR + '/' + filename);
+        }
         return json({ message: '更新成功' });
     }
 
@@ -293,6 +304,50 @@
         return json({ message: '屏蔽词已更新' });
     }
 
+    /* --- 案头收藏（与 server.js 的 /api/favorites 对齐） --- */
+    async function readFavorites() {
+        if (!(await fileExists(FAVORITES_FILE))) return [];
+        try {
+            const list = JSON.parse(await readText(FAVORITES_FILE));
+            return Array.isArray(list) ? list : [];
+        } catch (e) { return []; }
+    }
+
+    async function apiGetFavorites() {
+        return json(await readFavorites());
+    }
+
+    async function apiToggleFavorite(body) {
+        const { action = 'toggle', filename, quote, title } = (body || {});
+        if (!filename || !quote) return text('缺少参数', 400);
+
+        await ensureDirs();
+        const list = await readFavorites();
+        const idx = list.findIndex(x => x && x.filename === filename && x.quote === quote);
+
+        let pinned;
+        if (action === 'remove') {
+            if (idx >= 0) list.splice(idx, 1);
+            pinned = false;
+        } else if (idx >= 0 && action !== 'add') {
+            list.splice(idx, 1);
+            pinned = false;
+        } else if (idx < 0) {
+            list.unshift({
+                filename,
+                quote,
+                title: title || '',
+                pinnedAt: new Date().toISOString().slice(0, 10)
+            });
+            pinned = true;
+        } else {
+            pinned = true;
+        }
+
+        await writeText(FAVORITES_FILE, JSON.stringify(list, null, 4));
+        return json({ message: '操作成功', pinned, favorites: list });
+    }
+
     /* ------------------------------------------------------------
      * 路由与 fetch 拦截
      * ------------------------------------------------------------ */
@@ -320,6 +375,9 @@
             }
         } else if (seg[0] === 'random-quote' && method === 'GET') {
             return apiRandomQuote();
+        } else if (seg[0] === 'favorites') {
+            if (method === 'GET') return apiGetFavorites();
+            if (method === 'POST') return apiToggleFavorite(body);
         } else if (seg[0] === 'imagery' && seg[1] === 'ignore') {
             if (method === 'GET') return apiGetIgnoreWords();
             if (method === 'POST') return apiSetIgnoreWords(body);

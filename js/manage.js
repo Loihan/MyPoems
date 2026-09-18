@@ -6,6 +6,12 @@
 
 (function() {
     let allPoems = [];
+
+    function esc(value) {
+        return String(value == null ? '' : value)
+            .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
     
     // --- DOM元素 ---
     const listContainer = document.getElementById('manage-poems-list'); // tbody
@@ -49,7 +55,7 @@
         });
 
         function renderSelectedTags() {
-            tagList.innerHTML = selectedTags.map(tag => `<li class="tag-item">${tag}<span class="remove-tag" data-tag="${tag}">&times;</span></li>`).join('');
+            tagList.innerHTML = selectedTags.map(tag => `<li class="tag-item">${esc(tag)}<span class="remove-tag" data-tag="${esc(tag)}" role="button" aria-label="移除标签">&times;</span></li>`).join('');
             hiddenInput.value = selectedTags.join(',');
             renderTagCloud();
         }
@@ -58,11 +64,11 @@
             if (!cloudContainer) return;
             const availableTags = allTags.filter(tag => !selectedTags.includes(tag));
             if (availableTags.length === 0) {
-                cloudContainer.innerHTML = '<span style="font-size:0.8rem;color:#999;">暂无更多可选标签</span>';
+                cloudContainer.innerHTML = '<span class="stat-empty">暂无更多可选标签</span>';
                 return;
             }
             cloudContainer.innerHTML = availableTags.map(tag => 
-                `<div class="tag-cloud-item" data-tag="${tag}">${tag}</div>`
+                `<div class="tag-cloud-item" data-tag="${esc(tag)}">${esc(tag)}</div>`
             ).join('');
         }
 
@@ -70,7 +76,7 @@
             if (!query) { suggestions.style.display = 'none'; return; }
             const filtered = allTags.filter(tag => tag.toLowerCase().includes(query.toLowerCase()) && !selectedTags.includes(tag));
             if (filtered.length > 0) {
-                suggestions.innerHTML = filtered.map(tag => `<li data-tag="${tag}">${tag}</li>`).join('');
+                suggestions.innerHTML = filtered.map(tag => `<li data-tag="${esc(tag)}">${esc(tag)}</li>`).join('');
                 suggestions.style.display = 'block';
             } else {
                 suggestions.style.display = 'none';
@@ -127,8 +133,8 @@
         if (!editQuoteListEl) return;
         editQuoteListEl.innerHTML = editCurrentQuotes.map((quote, index) => `
             <li class="quote-list-item">
-                <span>${quote}</span>
-                <span class="remove-quote" data-index="${index}">&times;</span>
+                <span>${esc(quote)}</span>
+                <span class="remove-quote" data-index="${index}" role="button" aria-label="删除此句">&times;</span>
             </li>
         `).join('');
     }
@@ -154,43 +160,42 @@
             allPoems.sort((a, b) => new Date(b.creationDate) - new Date(a.creationDate));
         } catch (error) {
             console.error('加载出错:', error);
-            listContainer.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;">加载作品列表失败</td></tr>';
+            listContainer.innerHTML = '<tr><td colspan="5" class="empty-cell">加载作品列表失败，请检查本地服务。</td></tr>';
         }
     }
 
-    // 【修改】渲染表格行 - 修复体裁显示逻辑
+    // 渲染表格行
     function renderPoems(poemsToRender) {
         if (!poemsToRender || poemsToRender.length === 0) {
-            listContainer.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:40px;color:#888;">没有找到匹配的作品</td></tr>';
+            listContainer.innerHTML = '<tr><td colspan="5" class="empty-cell">没有找到匹配的作品</td></tr>';
         } else {
             listContainer.innerHTML = poemsToRender.map(poem => {
                 const typeClass = `type-${poem.type || '其他'}`;
-                const tagsHTML = (poem.tags && poem.tags.length) 
-                    ? poem.tags.map(t => `<span class="mini-tag">${t}</span>`).join('') 
-                    : '<span style="color:#ccc;font-size:0.8rem;">无标签</span>';
-                
-                // 【核心修复】只有当类型是 诗 或 词 时，才显示体裁
+                const tagsHTML = (poem.tags && poem.tags.length)
+                    ? poem.tags.map(t => `<span class="mini-tag">${esc(t)}</span>`).join('')
+                    : '<span class="stat-empty">未贴签</span>';
+
                 let genreText = '';
                 if ((poem.type === '诗' || poem.type === '词') && poem.genre) {
-                    genreText = ` / ${poem.genre}`;
+                    genreText = `<span class="text-muted"> · ${esc(poem.genre)}</span>`;
                 }
 
                 return `
                 <tr>
-                    <td><strong>${poem.title || '无标题'}</strong></td>
-                    <td><span class="badge ${typeClass}">${poem.type || '未知'}</span>${genreText}</td>
+                    <td><span class="col-title">${esc(poem.title || '无题')}</span></td>
+                    <td><span class="badge ${typeClass}">${esc(poem.type || '未知')}</span>${genreText}</td>
                     <td>${tagsHTML}</td>
-                    <td>${poem.creationDate || '-'}</td>
+                    <td>${esc(poem.creationDate || '—')}</td>
                     <td class="text-right">
                         <div class="action-btn-group">
-                            <button class="action-link edit-action edit-btn" data-filename="${poem.filename}" title="编辑">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <button type="button" class="action-link edit-action edit-btn" data-filename="${esc(poem.filename)}" title="编辑">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                                     <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                                 </svg>
                                 编辑
                             </button>
-                            <button class="action-link delete-action delete-btn" data-filename="${poem.filename}" title="删除">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <button type="button" class="action-link delete-action delete-btn" data-filename="${esc(poem.filename)}" title="删除">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                                     <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
                                 </svg>
                                 删除
@@ -202,10 +207,10 @@
         }
         updateCounter(poemsToRender.length, allPoems.length);
     }
-    
+
     function updateCounter(displayed, total) {
-        if(counter) {
-            counter.innerHTML = `<span>展示 <strong>${displayed}</strong></span> / <span>共 <strong>${total}</strong></span>`;
+        if (counter) {
+            counter.innerHTML = `展示 <strong>${displayed}</strong> 篇 &nbsp;/&nbsp; 共 <strong>${total}</strong> 篇`;
         }
     }
 
@@ -309,7 +314,17 @@
             }
 
             if (target.classList.contains('delete-btn')) {
-                if (confirm(`确定要删除作品《${(filename.replace('.json', ''))}》吗？`)) {
+                const title = (allPoems.find(p => p.filename === filename) || {}).title
+                    || filename.replace('.json', '');
+                const ok = await window.App.confirm({
+                    tone: 'danger',
+                    title: '删除作品',
+                    message: '删除后本地 JSON 文件会被移除，且无法撤销。',
+                    detail: `《${title}》`,
+                    confirmText: '删除',
+                    cancelText: '保留'
+                });
+                if (ok) {
                     try {
                         const response = await fetch(`/api/poems/${filename}`, { method: 'DELETE' });
                         if (response.ok) {
@@ -352,7 +367,10 @@
                     closeModal();
                     await loadAllPoems();
                     performFilter();
-                } else { showNotification('更新失败', 'error'); }
+                } else {
+                    const errorText = await response.text();
+                    showNotification(`更新失败：${errorText || '请重试'}`, 'error');
+                }
             } catch(error) { console.error('更新时出错:', error); showNotification('更新时出错', 'error'); }
         });
 

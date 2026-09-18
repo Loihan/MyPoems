@@ -195,7 +195,11 @@ app.post('/api/poems', (req, res) => {
         // 文件名处理：去除非法字符
         const filename = `${poemData.title.replace(/[\\?%*:|"<>]/g, '')}.json`;
         const filePath = path.join(poemsDirectory, filename);
-        
+
+        if (fs.existsSync(filePath)) {
+            return res.status(409).send('已存在同名作品，请修改标题');
+        }
+
         fs.writeFile(filePath, JSON.stringify(poemData, null, 4), (err) => {
             if (err) return res.status(500).send('保存失败');
             res.status(201).send({ message: '创建成功', filename });
@@ -207,15 +211,29 @@ app.post('/api/poems', (req, res) => {
 
 // 6. 更新作品
 app.put('/api/poems/:filename', (req, res) => {
-    const filePath = path.join(poemsDirectory, req.params.filename);
+    const oldFilename = req.params.filename;
+    const oldPath = path.join(poemsDirectory, oldFilename);
     const updatedData = req.body;
     updatedData.tags = processTags(updatedData.tags);
-    
-    if (!fs.existsSync(filePath)) return res.status(404).send('文件不存在');
-    
-    fs.writeFile(filePath, JSON.stringify(updatedData, null, 4), (err) => {
+
+    if (!fs.existsSync(oldPath)) return res.status(404).send('文件不存在');
+
+    // 若标题变化导致文件名变化，先检查是否重名
+    const newFilename = updatedData.title
+        ? `${updatedData.title.replace(/[\\?%*:|"<>]/g, '')}.json`
+        : oldFilename;
+    const newPath = path.join(poemsDirectory, newFilename);
+    if (newFilename !== oldFilename && fs.existsSync(newPath)) {
+        return res.status(409).send('已存在同名作品，请修改标题');
+    }
+
+    fs.writeFile(newPath, JSON.stringify(updatedData, null, 4), (err) => {
         if (err) return res.status(500).send('更新失败');
-        res.status(200).send({ message: '更新成功' });
+        if (newFilename !== oldFilename) {
+            fs.unlink(oldPath, () => res.status(200).send({ message: '更新成功', filename: newFilename }));
+        } else {
+            res.status(200).send({ message: '更新成功' });
+        }
     });
 });
 
@@ -289,8 +307,77 @@ app.post('/api/imagery/ignore', (req, res) => {
     });
 });
 
+// === 新增：案头收藏 (Favorites) ===
+// 存放于项目根目录的 favorites.json，纯文本、可同步、可手工编辑
+const favoritesFile = path.join(__dirname, 'favorites.json');
+
+function readFavorites() {
+    if (!fs.existsSync(favoritesFile)) return [];
+    try {
+        const list = JSON.parse(fs.readFileSync(favoritesFile, 'utf8'));
+        return Array.isArray(list) ? list : [];
+    } catch (e) {
+        console.error('favorites.json 解析失败，按空处理');
+        return [];
+    }
+}
+
+// 获取案头
+app.get('/api/favorites', (req, res) => {
+    res.json(readFavorites());
+});
+
+// 钉住 / 取消钉住（action: toggle | add | remove）
+app.post('/api/favorites', (req, res) => {
+    const { action = 'toggle', filename, quote, title } = req.body || {};
+    if (!filename || !quote) return res.status(400).send('缺少参数');
+
+    const list = readFavorites();
+    const idx = list.findIndex(x => x && x.filename === filename && x.quote === quote);
+
+    let pinned;
+    if (action === 'remove') {
+        if (idx >= 0) list.splice(idx, 1);
+        pinned = false;
+    } else if (idx >= 0 && action !== 'add') {
+        list.splice(idx, 1);
+        pinned = false;
+    } else if (idx < 0) {
+        list.unshift({
+            filename,
+            quote,
+            title: title || '',
+            pinnedAt: new Date().toISOString().slice(0, 10)
+        });
+        pinned = true;
+    } else {
+        pinned = true;
+    }
+
+    fs.writeFile(favoritesFile, JSON.stringify(list, null, 4), (err) => {
+        if (err) {
+            console.error('写入 favorites.json 出错:', err);
+            return res.status(500).send('保存失败');
+        }
+        res.json({ message: '操作成功', pinned, favorites: list });
+    });
+});
+
 // --- 启动服务器 ---
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
     console.log(`>>> 服务已启动 http://localhost:${PORT}`);
     console.log(`>>> 正在监视: ${poemsDirectory}`);
+});
+
+// 端口被占用时，给一句人话，而不是抛一大段堆栈
+server.on('error', (err) => {
+    if (err && err.code === 'EADDRINUSE') {
+        console.log('');
+        console.log(`⚠ 端口 ${PORT} 已被占用：多半是已经有一个 MyPoems 服务在跑。`);
+        console.log(`   → 直接打开 http://localhost:${PORT} 即可正常使用，不必重复启动；`);
+        console.log('   → 若要重新启动，请先关掉那个还开着的命令行窗口（或结束占用端口的 node 进程）。');
+        console.log('');
+        process.exit(0);
+    }
+    throw err;
 });

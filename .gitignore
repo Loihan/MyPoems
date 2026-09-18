@@ -19,6 +19,8 @@ Thumbs.db
 poems/*.json
 # 屏蔽词配置
 ignore_words.json
+# 案头收藏
+favorites.json
 # 打包生成的诗词种子数据（内含全部诗词）
 js/seed-data.js
 

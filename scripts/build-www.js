@@ -27,6 +27,7 @@ const copy = (src, dest) => {
 };
 
 copy(path.join(ROOT, 'index.html'), path.join(WWW, 'index.html'));
+copy(path.join(ROOT, 'logo.ico'), path.join(WWW, 'logo.ico'));
 copy(path.join(ROOT, 'css'), path.join(WWW, 'css'));
 copy(path.join(ROOT, 'html'), path.join(WWW, 'html'));
 copy(path.join(ROOT, 'js'), path.join(WWW, 'js'));
